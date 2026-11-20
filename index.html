@@ -205,6 +205,8 @@
                 #app {
                     overflow: visible;
                     min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
                 }
                 .screen nav {
                     padding-bottom: 0;
@@ -213,6 +215,8 @@
             .pg {
                 flex: 1;
                 padding: 20px 18px 28px;
+                display: flex;
+                flex-direction: column;
             }
             h1,
             h2,
@@ -304,6 +308,7 @@
                 border: 0;
                 background: none;
                 color: var(--pk);
+                width: 44px;
                 min-width: 44px;
                 min-height: 44px;
                 padding: 0;
@@ -312,6 +317,7 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+                align-self: flex-start;
             }
             .lk {
                 border: 0;
@@ -420,6 +426,13 @@
                 height: 100%;
                 background: var(--pk);
             }
+            .w-wrap {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                gap: 20px;
+            }
             .w-top {
                 display: flex;
                 align-items: center;
@@ -439,6 +452,49 @@
                 width: 24px;
                 height: 24px;
                 color: var(--pk);
+            }
+            .av {
+                width: 44px;
+                height: 44px;
+                border-radius: 8px;
+                border: 1.5px solid var(--bd);
+                background: var(--card);
+                color: var(--pk);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                padding: 0;
+                cursor: pointer;
+                flex: none;
+                font:
+                    700 15px/1 "Bricolage Grotesque",
+                    system-ui,
+                    sans-serif;
+            }
+            .av .i {
+                width: 20px;
+                height: 20px;
+                color: currentColor;
+            }
+            .av:hover,
+            .av:active {
+                opacity: 0.88;
+            }
+            .hhdr .av {
+                border-color: rgba(255, 255, 255, 0.45);
+                background: rgba(255, 255, 255, 0.14);
+                color: var(--on-pk);
+            }
+            :root[data-theme="dark"] .hhdr .av {
+                border-color: rgba(42, 10, 24, 0.35);
+                background: rgba(42, 10, 24, 0.14);
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme="light"]) .hhdr .av {
+                    border-color: rgba(42, 10, 24, 0.35);
+                    background: rgba(42, 10, 24, 0.14);
+                }
             }
             .big1000 {
                 font-family: "Bricolage Grotesque", system-ui, sans-serif;
@@ -528,7 +584,7 @@
                 text-align: left;
                 cursor: pointer;
             }
-            .grow.st {
+            .grow.static {
                 cursor: default;
             }
             .grow + .grow {
@@ -579,12 +635,19 @@
             .hhdr {
                 background: var(--pk);
                 color: var(--on-pk);
-                padding: 20px 18px 18px;
+                padding: 16px 18px 18px;
+            }
+            .hhdr-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin: 0 0 6px;
             }
             .hhdr .gr {
                 font-size: 14px;
                 opacity: 0.92;
-                margin: 0 0 4px;
+                margin: 0;
             }
             .hhdr .ht {
                 font-family: "Bricolage Grotesque", system-ui, sans-serif;
@@ -788,7 +851,8 @@
             .grow,
             nav button,
             input,
-            .seg button {
+            .seg button,
+            .av {
                 transition:
                     background-color 0.18s,
                     border-color 0.18s,
@@ -801,8 +865,8 @@
             .sheet.on .pn {
                 animation: up 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
             }
-            .sheet.st .ov,
-            .sheet.st .pn {
+            .sheet.stay .ov,
+            .sheet.stay .pn {
                 animation: none;
             }
             .sheet.out .ov {
@@ -907,6 +971,8 @@
             } catch (e) {
                 S = { acc: {} };
             }
+            if (!S || typeof S !== "object") S = { acc: {} };
+            if (!S.acc) S.acc = {};
             const RW = {
                 // Welcome and account
                 "Never miss a visit or a vaccine in your child’s first 1000 days.":
@@ -946,7 +1012,8 @@
                     "Muri porogaramu nyayo, hoherezwa kode y’imibare 6 kuri SMS.",
                 "No account for this number. Create one first.":
                     "Nta konti ihari kuri iyi nimero. Banza ufungure konti.",
-                "Wrong PIN. Try again.": "PIN siyo. Ongera ugerageze.",
+                "Wrong PIN. Try again.": "PIN si yo. Ongera ugerageze.",
+                Back: "Subira inyuma", // REVIEW
                 // Pregnancy setup
                 "Are you pregnant?": "Uratwite?",
                 Yes: "Yego",
@@ -971,8 +1038,9 @@
                     "Ufite umwana uri munsi y’imyaka 2?",
                 "Your baby": "Umwana wawe",
                 "Your child": "Umwana wawe",
-                "Name or nickname": "Izina cyangwa akabyiniriro",
+                "Name or nickname": "Izina cyangwa irihimbano",
                 "Birth date": "Itariki y’amavuko",
+                "Finish registration": "Rangiza kwiyandikisha",
                 "Save and add another": "Bika wongere undi",
                 "Save and finish": "Bika urangize",
                 Save: "Bika",
@@ -1011,7 +1079,7 @@
                 // Birth screen
                 "Has your baby been born?": "Umwana wawe yavutse?",
                 "Not yet": "Ntaravuka",
-                "I am no longer pregnant": "Sinkitwite",
+                "I am no longer pregnant": "Ntabwo ngitwite",
                 "We are here for you. Pregnancy reminders are stopped.":
                     "Turi kumwe nawe. Ibyibutsa by’inda byahagaritswe.", // REVIEW
                 // Vaccines tab
@@ -1030,10 +1098,23 @@
                 Overdue: "Yarengeje igihe", // REVIEW
                 "Due soon": "Iri hafi", // REVIEW
                 Upcoming: "Iri imbere", // REVIEW
+                // Appointments
+                Appointments: "Gahunda",
+                "Add appointment": "Ongeraho gahunda",
+                "Clinic visit": "Gahunda yo kwa muganga",
+                "For whom": "Uwo ireba",
+                "Reason (optional)": "Impamvu (si itegeko)",
+                "e.g. Weight check, checkup": "Urugero: Gupima ibiro, isuzuma",
+                "Appointment date": "Itariki ya gahunda",
+                "No appointments yet.": "Nta gahunda irandikwa.",
+                "Add a doctor or clinic appointment date from your card.":
+                    "Andika itariki yo gusubira kwa muganga iri ku ikarita yawe.",
+                "Remove appointment": "Siba gahunda",
+                "Appointment removed": "Gahunda yasibwe",
                 // Tips
                 Tips: "Inama",
                 "No approved tip for this stage yet.":
-                    "Nta nama yemejwe kuri iki cyiciro kirahari.",
+                    "Nta nama yemejwe kuri iki cyiciro iraboneka.",
                 "Sample text for the prototype. Real tips are written or approved by doctors, in Kinyarwanda.":
                     "Iyi nyandiko ni icyitegererezo. Inama nyazo zandikwa cyangwa zemezwa na muganga, mu Kinyarwanda.",
                 "Keep your clinic card in a safe place and bring it to every visit.":
@@ -1103,7 +1184,7 @@
                 Measles: "Iseru",
                 "Vitamin A deficiency": "Kubura vitamine A", // REVIEW
                 Tetanus: "Tetanosi",
-                "Not listed": "Ntiribonetse",
+                "Not listed": "Ntibyanditswe",
                 "Hepatitis B, birth dose": "Hepatite B, doze yo ku ivuka",
                 "Hepatitis B 1": "Hepatite B 1",
                 "Hepatitis B 2": "Hepatite B 2",
@@ -1134,7 +1215,7 @@
                     "0.1 ml (0.05 ml kugeza ku kwezi 1)",
                 "2 drops": "Ibitonyanga 2",
                 Intradermal: "Mu ruhu", // REVIEW
-                Intramuscular: "Mu gikanu", // REVIEW
+                Intramuscular: "Mu nyama", // REVIEW
                 Oral: "Mu kanwa",
                 Subcutaneous: "Munsi y’uruhu", // REVIEW
                 "Left upper arm": "Hejuru ku kuboko kw’ibumoso",
@@ -1182,8 +1263,8 @@
                     d.getDate(),
                 ).getTime();
             };
-            const fm = (t) => {
-                const d = new Date(t);
+            const fm = (ts) => {
+                const d = new Date(ts);
                 return (
                     String(d.getDate()).padStart(2, "0") +
                     "/" +
@@ -1193,7 +1274,7 @@
                 );
             };
             const dErr = (x) =>
-                !x
+                x === null
                     ? t("Type the date: day, month and year.")
                     : isNaN(x)
                       ? t(
@@ -1232,6 +1313,10 @@
             };
             const I = (n) =>
                 `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic[n]}</svg>`;
+            const avBtn = () =>
+                `<button type="button" class="av" onclick="go('me')" aria-label="${t("Profile")}">${I("user")}</button>`;
+            const topHdr = (title) =>
+                `<div class="w-top" style="margin-bottom:14px"><h2 style="margin:0">${title}</h2>${avBtn()}</div>`;
             const langSw = () =>
                 `<div class="seg" role="group" aria-label="${t("Language")}"><button type="button" class="${lang == "rw" ? "on" : ""}" aria-pressed="${lang == "rw"}" onclick="setLang('rw')">Kinyarwanda</button><button type="button" class="${lang == "en" ? "on" : ""}" aria-pressed="${lang == "en"}" onclick="setLang('en')">English</button></div>`;
             const stpBar = (n) =>
@@ -1245,50 +1330,82 @@
                     m = g("m"),
                     y = g("y");
                 if (!d && !m && !y) return null;
-                const t = new Date(+y, m - 1, +d);
+                const ts = new Date(+y, m - 1, +d);
                 return y.length == 4 &&
-                    t.getDate() == +d &&
-                    t.getMonth() == m - 1
-                    ? t.getTime()
+                    ts.getDate() == +d &&
+                    ts.getMonth() == m - 1
+                    ? ts.getTime()
                     : NaN;
             };
             document.addEventListener("input", (e) => {
-                const t = e.target;
-                if (t.closest && t.closest(".dt")) {
-                    t.value = t.value.replace(/\D/g, "");
-                    if (t.value.length == t.maxLength && t.nextElementSibling)
-                        t.nextElementSibling.focus();
+                const el = e.target;
+                if (el.closest && el.closest(".dt")) {
+                    el.value = el.value.replace(/\D/g, "");
+                    if (
+                        el.value.length == el.maxLength &&
+                        el.nextElementSibling
+                    )
+                        el.nextElementSibling.focus();
                 }
             });
             const toast = (m) => {
-                const t = $("#toast");
-                t.textContent = m;
-                t.classList.add("on");
-                setTimeout(() => t.classList.remove("on"), 2800);
+                const el = $("#toast");
+                el.textContent = m;
+                el.classList.add("on");
+                setTimeout(() => el.classList.remove("on"), 2800);
             };
-            let ct;
+            let ct,
+                lastFocus = null;
             function sheet(h) {
                 clearTimeout(ct);
                 const s = $("#sheet"),
                     was =
                         s.classList.contains("on") &&
                         !s.classList.contains("out");
+                if (!was) lastFocus = document.activeElement;
                 s.classList.remove("out");
-                s.classList.toggle("st", was);
+                s.classList.toggle("stay", was);
                 s.innerHTML =
-                    '<div class="ov" onclick="cs()"></div><div class="pn">' +
+                    '<div class="ov" onclick="cs()"></div><div class="pn" role="dialog" aria-modal="true">' +
                     h +
                     "</div>";
                 s.classList.add("on");
+                const fb = s.querySelector(".pn button,.pn input");
+                if (fb) fb.focus();
             }
             function cs() {
                 const s = $("#sheet");
+                if (!s.classList.contains("on")) return;
                 s.classList.add("out");
-                ct = setTimeout(
-                    () => s.classList.remove("on", "out", "st"),
-                    200,
-                );
+                ct = setTimeout(() => {
+                    s.classList.remove("on", "out", "stay");
+                    if (lastFocus && typeof lastFocus.focus === "function")
+                        lastFocus.focus();
+                    lastFocus = null;
+                }, 200);
             }
+            document.addEventListener("keydown", (e) => {
+                const s = $("#sheet");
+                if (!s.classList.contains("on")) return;
+                if (e.key === "Escape") {
+                    e.preventDefault();
+                    cs();
+                    return;
+                }
+                if (e.key === "Tab") {
+                    const f = [...s.querySelectorAll(".pn button,.pn input")];
+                    if (!f.length) return;
+                    const first = f[0],
+                        last = f[f.length - 1];
+                    if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                }
+            });
             const ANC = [12, 20, 26, 30, 34, 36, 38, 40];
             const DPT = "Diphtheria, whooping cough, tetanus";
             const VX = [
@@ -1550,9 +1667,9 @@
                         : [t("Upcoming"), ""];
             const tipsFor = () => {
                 const r = [],
-                    t = td();
+                    t0 = td();
                 if (U.preg) {
-                    const w = Math.floor((t - U.preg.start) / (7 * D));
+                    const w = Math.floor((t0 - U.preg.start) / (7 * D));
                     r.push(
                         w < 20
                             ? t(
@@ -1561,8 +1678,8 @@
                             : t("Write your questions down before each visit."),
                     );
                 }
-                U.kids.forEach((k) => {
-                    if ((t - k.birth) / (30.4 * D) < 6)
+                (U.kids || []).forEach((k) => {
+                    if ((t0 - k.birth) / (30.4 * D) < 6)
                         r.push(
                             t(
                                 "Keep {0}’s vaccination card with your phone.",
@@ -1586,8 +1703,8 @@
                     `${hdr}<div class="${pc()}">${h}</div><nav>${[
                         ["home", "Home", "home"],
                         ["vax", "Vaccines", "shield"],
+                        ["appt", "Appointments", "cal"],
                         ["tips", "Tips", "bulb"],
-                        ["me", "Profile", "user"],
                     ]
                         .map(
                             ([k, l, i]) =>
@@ -1595,8 +1712,10 @@
                         )
                         .join("")}</nav>`;
             };
-            function go(t) {
-                if (t) tab = t;
+            function go(k) {
+                if (k) tab = k;
+                if (U && !U.kids) U.kids = [];
+                if (U && !U.appts) U.appts = [];
                 if (U && U.preg && !U.tt) mkTT();
                 ({
                     welcome: fW,
@@ -1607,6 +1726,7 @@
                     born: fBorn,
                     home: fHome,
                     vax: fVax,
+                    appt: fAppt,
                     tips: fTips,
                     me: fMe,
                 })[tab]();
@@ -1614,7 +1734,7 @@
 
             function fW() {
                 pg(
-                    `<div style="min-height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:20px"><div><div class="w-top"><div class="wm">${I("logo")}<span>Kibondo</span></div>${langSw()}</div><div class="big1000" aria-hidden="true">1000</div><h1 class="w-h1">${t("Never miss a visit or a vaccine in your child’s first 1000 days.")}</h1><div class="tl" aria-hidden="true"><div class="tl-bar"><span style="flex:270"></span><span style="flex:365"></span><span style="flex:365"></span></div><div class="tl-lbl"><span style="flex:270">${t("Pregnancy")}</span><span style="flex:365">${t("Year 1")}</span><span style="flex:365">${t("Year 2")}</span></div></div><div class="rows"><div class="row">${I("cal")}<div>${t("Visit reminders")}</div></div><div class="row">${I("shield")}<div>${t("Vaccine schedule")}</div></div><div class="row">${I("bulb")}<div>${t("Trusted tips")}</div></div></div></div><div><button type="button" class="b" onclick="go('su')">${t("Create account")}</button><button type="button" class="lk" onclick="go('li')">${t("I already have an account")}</button></div></div>`,
+                    `<div class="w-wrap"><div><div class="w-top"><div class="wm">${I("logo")}<span>Kibondo</span></div>${langSw()}</div><div class="big1000" aria-hidden="true">1000</div><h1 class="w-h1">${t("Never miss a visit or a vaccine in your child’s first 1000 days.")}</h1><div class="tl" aria-hidden="true"><div class="tl-bar"><span style="flex:270"></span><span style="flex:365"></span><span style="flex:365"></span></div><div class="tl-lbl"><span style="flex:270">${t("Pregnancy")}</span><span style="flex:365">${t("Year 1")}</span><span style="flex:365">${t("Year 2")}</span></div></div><div class="rows"><div class="row">${I("cal")}<div>${t("Visit reminders")}</div></div><div class="row">${I("shield")}<div>${t("Vaccine schedule")}</div></div><div class="row">${I("bulb")}<div>${t("Trusted tips")}</div></div></div></div><div><button type="button" class="b" onclick="go('su')">${t("Create account")}</button><button type="button" class="lk" onclick="go('li')">${t("I already have an account")}</button></div></div>`,
                 );
             }
             function fSU() {
@@ -1640,11 +1760,11 @@
                     return (e.textContent = t(
                         "This number already has an account. Log in instead.",
                     ));
-                U = { ok: 0, kids: [], ai: 0, name: n };
+                U = { ok: 0, kids: [], appts: [], ai: 0, name: n };
                 S.acc[p] = { pin: a, d: U };
                 ph = p;
                 sv();
-                go("s1");
+                go("s2");
             }
             function fLI() {
                 pg(
@@ -1668,57 +1788,17 @@
                     return (e.textContent = t("Wrong PIN. Try again."));
                 ph = p;
                 U = a.d;
-                go(U.ok ? "home" : "s1");
-            }
-
-            function f1() {
-                pg(
-                    `${stpBar(1)}<h2>${t("Are you pregnant?")}</h2><button type="button" class="b" onclick="T.m='w';f1y()">${t("Yes")}</button><button type="button" class="b o" onclick="go('s2')">${t("No")}</button>`,
-                );
-            }
-            function f1y() {
-                pg(
-                    `${stpBar(1)}<button type="button" class="bk" onclick="f1()" aria-label="${t("Back")}">${I("back")}</button><h2>${t("How far along are you?")}</h2><div class="seg eq" role="group"><button type="button" class="${T.m == "w" ? "on" : ""}" aria-pressed="${T.m == "w"}" onclick="T.m='w';still=1;f1y()">${t("I know the weeks")}</button><button type="button" class="${T.m == "d" ? "on" : ""}" aria-pressed="${T.m == "d"}" onclick="T.m='d';still=1;f1y()">${t("I know my due date")}</button></div>${T.m == "w" ? `<label class="m" for="wk">${t("Weeks pregnant (1 to 42)")}</label><input id="wk" inputmode="numeric" maxlength="2">` : `<label class="m">${t("Due date")}</label>` + DB("du")}<label class="m">${t("Next appointment from your card (optional)")}</label>${DB("na")}<p id="er" class="er"></p><button type="button" class="b" onclick="s1()">${t("Continue")}</button>`,
-                );
-            }
-            function s1() {
-                const e = $("#er");
-                let st;
-                if (T.m == "w") {
-                    const w = +$("#wk").value;
-                    if (!(w >= 1 && w <= 42))
-                        return (e.textContent = t(
-                            "Weeks must be from 1 to 42. Please check with your health center.",
-                        ));
-                    st = td() - w * 7 * D;
-                } else {
-                    const d = RD("du");
-                    if (!d) return (e.textContent = t("Type the due date."));
-                    if (isNaN(d) || d < td() - 14 * D || d > td() + 300 * D)
-                        return (e.textContent = t(
-                            "Please check this date with your health center.",
-                        ));
-                    st = d - 280 * D;
-                }
-                const n = RD("na");
-                if (isNaN(n) || (n && n < td()))
-                    return (e.textContent =
-                        dErr(n) + t(" You can also leave it empty."));
-                U.preg = { start: st };
-                U.ai = 0;
-                U.appt = n ? { due: n, src: "doctor" } : nextAnc();
-                sv();
-                go("s2");
+                go(U.ok ? "home" : "s2");
             }
 
             function f2() {
                 pg(
-                    `${stpBar(2)}<h2>${t("Do you have a child under 2 years?")}</h2><button type="button" class="b" onclick="T.mode='s';fK()">${t("Yes")}</button><button type="button" class="b o" onclick="U.ok=1;sv();go('home')">${t("No")}</button>`,
+                    `${stpBar(1)}<h2>${t("Do you have a child under 2 years?")}</h2><button type="button" class="b" onclick="T.mode='s';fK()">${t("Yes")}</button><button type="button" class="b o" onclick="go('s1')">${t("No")}</button>`,
                 );
             }
             function fK() {
                 pg(
-                    `${U && U.ok ? "" : stpBar(2)}<button type="button" class="bk" onclick="go('${U && U.ok ? "home" : "s2"}')" aria-label="${t("Back")}">${I("back")}</button><h2>${T.mode == "b" ? t("Your baby") : t("Your child")}</h2><label class="m" for="kn">${t("Name or nickname")}</label><input id="kn" maxlength="30"><label class="m">${t("Birth date")}</label>${DB("kb")}<p id="er" class="er"></p>${T.mode == "s" ? `<button type="button" class="b" onclick="sK(1)">${t("Save and add another")}</button><button type="button" class="b o" onclick="sK(0)">${t("Save and finish")}</button>` : `<button type="button" class="b" onclick="sK(0)">${t("Save")}</button>`}`,
+                    `${U && U.ok ? "" : stpBar(1)}<button type="button" class="bk" onclick="go('${U && U.ok ? "home" : "s2"}')" aria-label="${t("Back")}">${I("back")}</button><h2>${T.mode == "b" ? t("Your baby") : t("Your child")}</h2><label class="m" for="kn">${t("Name or nickname")}</label><input id="kn" maxlength="30"><label class="m">${t("Birth date")}</label>${DB("kb")}<p id="er" class="er"></p>${T.mode == "s" ? `<button type="button" class="b" onclick="sK(0)">${t("Finish registration")}</button><button type="button" class="b o" onclick="sK(1)">${t("Save and add another")}</button>` : `<button type="button" class="b" onclick="sK(0)">${t("Save")}</button>`}`,
                 );
             }
             function sK(more) {
@@ -1726,8 +1806,9 @@
                     n = E($("#kn").value.trim()),
                     b = RD("kb");
                 if (!n) return (e.textContent = t("Type the name."));
-                if (!b || isNaN(b))
+                if (b === null)
                     return (e.textContent = t("Type a valid birth date."));
+                if (isNaN(b)) return (e.textContent = dErr(b));
                 if (b > td())
                     return (e.textContent = t(
                         "The birth date cannot be in the future.",
@@ -1769,7 +1850,7 @@
                     .join("");
                 if (!l) return nxt();
                 pg(
-                    `${U && U.ok ? "" : stpBar(2)}<h2>${t("Already given?")}</h2><p class="m">${t("Tick the vaccines {0} already received, so they are not reminded again.", T.k.name)}</p><div class="grp">${l}</div><button type="button" class="b" onclick="sPre()">${t("Continue")}</button>`,
+                    `${U && U.ok ? "" : stpBar(1)}<h2>${t("Already given?")}</h2><p class="m">${t("Tick the vaccines {0} already received, so they are not reminded again.", T.k.name)}</p><div class="grp">${l}</div><button type="button" class="b" onclick="sPre()">${t("Continue")}</button>`,
                 );
             }
             function sPre() {
@@ -1782,6 +1863,7 @@
             }
             function nxt() {
                 if (T.more) return fK();
+                if (T.mode == "s" && !U.ok) return go("s1");
                 if (T.mode == "b") {
                     U.preg = null;
                     U.appt = null;
@@ -1791,11 +1873,57 @@
                 go("home");
             }
 
+            function f1() {
+                pg(
+                    `${stpBar(2)}<button type="button" class="bk" onclick="go('s2')" aria-label="${t("Back")}">${I("back")}</button><h2>${t("Are you pregnant?")}</h2><button type="button" class="b" onclick="T.m='w';f1y()">${t("Yes")}</button><button type="button" class="b o" onclick="U.ok=1;sv();go('home')">${t("No")}</button>`,
+                );
+            }
+            function f1y() {
+                pg(
+                    `${stpBar(2)}<button type="button" class="bk" onclick="f1()" aria-label="${t("Back")}">${I("back")}</button><h2>${t("How far along are you?")}</h2><div class="seg eq" role="group"><button type="button" class="${T.m == "w" ? "on" : ""}" aria-pressed="${T.m == "w"}" onclick="T.m='w';still=1;f1y()">${t("I know the weeks")}</button><button type="button" class="${T.m == "d" ? "on" : ""}" aria-pressed="${T.m == "d"}" onclick="T.m='d';still=1;f1y()">${t("I know my due date")}</button></div>${T.m == "w" ? `<label class="m" for="wk">${t("Weeks pregnant (1 to 42)")}</label><input id="wk" inputmode="numeric" maxlength="2">` : `<label class="m">${t("Due date")}</label>` + DB("du")}<label class="m">${t("Next appointment from your card (optional)")}</label>${DB("na")}<p id="er" class="er"></p><button type="button" class="b" onclick="s1()">${t("Continue")}</button>`,
+                );
+            }
+            function s1() {
+                const e = $("#er");
+                let st;
+                if (T.m == "w") {
+                    const w = +$("#wk").value;
+                    if (!(w >= 1 && w <= 42))
+                        return (e.textContent = t(
+                            "Weeks must be from 1 to 42. Please check with your health center.",
+                        ));
+                    st = td() - w * 7 * D;
+                } else {
+                    const d = RD("du");
+                    if (d === null)
+                        return (e.textContent = t("Type the due date."));
+                    if (isNaN(d)) return (e.textContent = dErr(d));
+                    if (d < td() - 14 * D || d > td() + 300 * D)
+                        return (e.textContent = t(
+                            "Please check this date with your health center.",
+                        ));
+                    st = d - 280 * D;
+                }
+                const n = RD("na");
+                if (isNaN(n) || (n !== null && n < td()))
+                    return (e.textContent =
+                        dErr(n) + t(" You can also leave it empty."));
+                U.preg = { start: st };
+                U.ai = 0;
+                U.appt = n !== null ? { due: n, src: "doctor" } : nextAnc();
+                U.ok = 1;
+                sv();
+                go("home");
+            }
+
             function fHome() {
                 tab = "home";
                 const t0 = td(),
-                    ks = U.kids;
-                let hdr = `<div class="hhdr"><div class="gr">Muraho${U.name ? ", " + U.name : ""}</div>`;
+                    ks = U.kids,
+                    ap = (U.appts || [])
+                        .filter((x) => !x.done)
+                        .sort((a, b) => a.due - b.due);
+                let hdr = `<div class="hhdr"><div class="hhdr-top"><div class="gr">Muraho${U.name ? ", " + U.name : ""}</div>${avBtn()}</div>`;
                 if (U.preg) {
                     const w = Math.floor((t0 - U.preg.start) / (7 * D));
                     hdr += `<div class="ht">${t("Week {0} of pregnancy", w)}</div><div class="hd">${t("Due {0}", fm(U.preg.start + 280 * D))}</div><div class="hbar" aria-hidden="true"><i style="width:${Math.min(100, Math.max(0, (w / 40) * 100))}%"></i></div>`;
@@ -1807,7 +1935,7 @@
                 }
                 hdr += `</div>`;
                 let h = "";
-                if (!U.preg && !ks.length) {
+                if (!U.preg && !ks.length && !ap.length) {
                     h += `<button type="button" class="b" onclick="T.mode='s';fK()">${I("plus")}${t("Add a baby")}</button><button type="button" class="b o" onclick="T.m='w';f1y()">${t("I am pregnant")}</button>`;
                 } else {
                     let rows = "";
@@ -1815,7 +1943,7 @@
                         const a = U.appt;
                         rows += a
                             ? `<button type="button" class="grow" onclick="act('a')">${I("cal")}<div><b>${t("Antenatal visit")}</b><div class="sub">${fm(a.due)}, ${a.src == "doctor" ? t("from your card") : t("estimated by Kibondo")}</div></div>${a.due < t0 ? stHtml(t("Did you go?"), "wn") : ""}</button>`
-                            : `<div class="grow st">${I("cal")}<div><b>${t("Antenatal visit")}</b><div class="sub">${t("No more visits in the schedule.")}</div></div></div>`;
+                            : `<div class="grow static">${I("cal")}<div><b>${t("Antenatal visit")}</b><div class="sub">${t("No more visits in the schedule.")}</div></div></div>`;
                         if (U.tt) {
                             const tj = U.tt.findIndex((x) => !x.done),
                                 tx = U.tt[tj];
@@ -1825,20 +1953,25 @@
                             }
                         }
                     }
+                    ap.forEach((c) => {
+                        const [sl, sc] = stc(c);
+                        rows += `<button type="button" class="grow" onclick="act('c:${c.id}')">${I("cal")}<div><b>${c.title ? E(c.title) : t("Clinic visit")}</b><div class="sub">${c.who ? E(c.who) + ", " : ""}${fm(c.due)}</div></div>${stHtml(sl, sc)}</button>`;
+                    });
                     ks.forEach((k, i) => {
                         const n = Math.floor((t0 - k.birth) / D),
                             ag = ageTxt(n),
                             j = k.doses.findIndex((d) => !d.done),
                             d = k.doses[j];
-                        rows += `<div class="grow st">${I("baby")}<div><b>${t("{0} is {1} old", k.name, ag)}</b></div></div>`;
+                        if (U.preg || i > 0)
+                            rows += `<div class="grow static">${I("baby")}<div><b>${t("{0} is {1} old", k.name, ag)}</b></div></div>`;
                         if (d) {
                             const [sl, sc] = stc(d);
                             rows += `<button type="button" class="grow" onclick="act('v:${i}:${j}')">${I("shield")}<div><b>${t(d.n)}</b><div class="sub">${k.name}, ${fm(d.due)}</div></div>${stHtml(sl, sc)}</button>`;
                         } else {
-                            rows += `<div class="grow st">${I("check")}<div><b>${t("{0}: all vaccines done.", k.name)}</b></div>${stHtml(t("Done"), "ok")}</div>`;
+                            rows += `<div class="grow static">${I("check")}<div><b>${t("{0}: all vaccines done.", k.name)}</b></div>${stHtml(t("Done"), "ok")}</div>`;
                         }
                     });
-                    h += `<div class="grp">${rows}</div>`;
+                    h += `<div class="grp">${rows}</div><button type="button" class="b o" onclick="newAppt()">${I("plus")}${t("Add appointment")}</button>`;
                 }
                 const tp = tipsFor()[0];
                 if (tp)
@@ -1872,19 +2005,19 @@
                 );
                 if (!L.length)
                     return main(
-                        `<h2>${t("Vaccines")}</h2><div class="grp"><div class="grow st"><div>${t("Add a pregnancy or a baby from Home to see the vaccine list.")}</div></div></div>`,
+                        `${topHdr(t("Vaccines"))}<div class="grp"><div class="grow static"><div>${t("Add a pregnancy or a baby from Home to see the vaccine list.")}</div></div></div>`,
                     );
                 T.ki = Math.min(T.ki || 0, L.length - 1);
                 const s = L[T.ki];
                 main(
-                    `<h2>${t("Vaccines")}</h2>${L.length > 1 ? `<div class="seg eq" role="group">${L.map((x, i) => `<button type="button" class="${i == T.ki ? "on" : ""}" aria-pressed="${i == T.ki}" onclick="T.ki=${i};still=1;fVax()">${x.name}</button>`).join("")}</div>` : ""}<div class="grp">${s.doses
+                    `${topHdr(t("Vaccines"))}${L.length > 1 ? `<div class="seg eq" role="group">${L.map((x, i) => `<button type="button" class="${i == T.ki ? "on" : ""}" aria-pressed="${i == T.ki}" onclick="T.ki=${i};still=1;fVax()">${x.name}</button>`).join("")}</div>` : ""}<div class="grp">${s.doses
                         .map((d, j) => {
                             const [a, c] = stc(d),
                                 m = M(d.id),
                                 r = s.m ? "m:" + j : "v:" + s.i + ":" + j,
                                 body = `<div><b>${t(d.n)}</b><div class="sub">${t("Protects against {0}", t(m[3]))}</div><div class="sub">${d.done ? (d.given ? t("Given {0}", fm(d.given)) : t("Already given")) : t("Due {0}", fm(d.due)) + (d.src == "doctor" ? t(", from your card") : t(", estimated"))}</div></div>${stHtml(a, c)}`;
                             return d.done
-                                ? `<div class="grow st">${body}</div>`
+                                ? `<div class="grow static">${body}</div>`
                                 : `<button type="button" class="grow" onclick="act('${r}')">${body}</button>`;
                         })
                         .join(
@@ -1893,18 +2026,82 @@
                 );
             }
 
+            function fAppt() {
+                tab = "appt";
+                const ap = [...(U.appts || [])].sort(
+                    (a, b) =>
+                        (a.done ? 1 : 0) - (b.done ? 1 : 0) || a.due - b.due,
+                );
+                let rows = "";
+                if (U.preg) {
+                    const a = U.appt,
+                        t0 = td();
+                    rows += a
+                        ? `<button type="button" class="grow" onclick="act('a')">${I("cal")}<div><b>${t("Antenatal visit")}</b><div class="sub">${fm(a.due)}, ${a.src == "doctor" ? t("from your card") : t("estimated by Kibondo")}</div></div>${a.due < t0 ? stHtml(t("Did you go?"), "wn") : ""}</button>`
+                        : `<div class="grow static">${I("cal")}<div><b>${t("Antenatal visit")}</b><div class="sub">${t("No more visits in the schedule.")}</div></div></div>`;
+                }
+                ap.forEach((c) => {
+                    const [sl, sc] = stc(c),
+                        body = `${I("cal")}<div><b>${c.title ? E(c.title) : t("Clinic visit")}</b><div class="sub">${c.who ? E(c.who) + ", " : ""}${c.done ? (c.given ? t("Given {0}", fm(c.given)) : t("Done")) : fm(c.due)}</div></div>${stHtml(sl, sc)}`;
+                    rows += c.done
+                        ? `<div class="grow static">${body}</div>`
+                        : `<button type="button" class="grow" onclick="act('c:${c.id}')">${body}</button>`;
+                });
+                main(
+                    `${topHdr(t("Appointments"))}<button type="button" class="b" style="margin-top:0;margin-bottom:14px" onclick="newAppt()">${I("plus")}${t("Add appointment")}</button>${rows ? `<div class="grp">${rows}</div>` : `<div class="grp"><div class="grow static"><div><b>${t("No appointments yet.")}</b><div class="sub">${t("Add a doctor or clinic appointment date from your card.")}</div></div></div></div>`}`,
+                );
+            }
+
+            function newAppt() {
+                const whos = [
+                    ...(U.preg ? [t("Mother")] : []),
+                    ...(U.kids || []).map((k) => k.name),
+                ];
+                T.aw = whos[0] || "";
+                sheet(
+                    `<h3>${t("Add appointment")}</h3>${whos.length > 1 ? `<label class="m">${t("For whom")}</label><div class="seg eq" id="awg" role="group">${whos.map((w, i) => `<button type="button" class="${i == 0 ? "on" : ""}" onclick="T.aw=this.textContent;[...this.parentNode.children].forEach(b=>b.classList.toggle('on',b===this))">${w}</button>`).join("")}</div>` : ""}<label class="m" for="at">${t("Reason (optional)")}</label><input id="at" maxlength="40" placeholder="${t("e.g. Weight check, checkup")}"><label class="m">${t("Appointment date")}</label>${DB("ad")}<p id="er" class="er"></p><button type="button" class="b" onclick="svAppt()">${t("Save")}</button><button type="button" class="b o" onclick="cs()">${t("Cancel")}</button>`,
+                );
+            }
+            function svAppt() {
+                const d = RD("ad");
+                if (d === null || isNaN(d) || d < td())
+                    return ($("#er").textContent = dErr(d));
+                const title = $("#at").value.trim();
+                if (!U.appts) U.appts = [];
+                U.appts.push({
+                    id: String(Date.now()),
+                    who: T.aw,
+                    title: title,
+                    due: d,
+                    src: "doctor",
+                });
+                sv();
+                cs();
+                still = 1;
+                go();
+                toast(t("Saved"));
+            }
+            function delAppt(id) {
+                U.appts = (U.appts || []).filter((c) => c.id !== id);
+                sv();
+                cs();
+                still = 1;
+                go();
+                toast(t("Appointment removed"));
+            }
+
             function fTips() {
                 tab = "tips";
                 const l = tipsFor();
                 main(
-                    `<h2>${t("Tips")}</h2><div class="rows">${l.length ? l.map((x) => `<div class="row">${I("bulb")}<div>${x}</div></div>`).join("") : `<div class="row"><div>${t("No approved tip for this stage yet.")}</div></div>`}</div><p class="m" style="margin-top:12px">${t("Sample text for the prototype. Real tips are written or approved by doctors, in Kinyarwanda.")}</p>`,
+                    `${topHdr(t("Tips"))}<div class="rows">${l.length ? l.map((x) => `<div class="row">${I("bulb")}<div>${x}</div></div>`).join("") : `<div class="row"><div>${t("No approved tip for this stage yet.")}</div></div>`}</div><p class="m" style="margin-top:12px">${t("Sample text for the prototype. Real tips are written or approved by doctors, in Kinyarwanda.")}</p>`,
                 );
             }
 
             function fMe() {
                 tab = "me";
                 main(
-                    `<div class="w-top" style="margin-bottom:14px"><h2 style="margin:0">${t("Profile")}</h2>${langSw()}</div><div class="rows" style="margin-bottom:16px"><div class="row">${I("phone")}<div><b style="font-weight:500">${ph}</b><div class="sub">${t("Protected by your PIN")}</div></div></div></div><button type="button" class="b o" onclick="U=null;ph=null;go('welcome')">${t("Log out")}</button><button type="button" class="b o" onclick="rq()">${t("Reset prototype data")}</button><p class="m" style="margin-top:12px">${t("Prototype only. There is no server: data stays on this device, and no SMS is sent.")}</p>`,
+                    `<button type="button" class="bk" onclick="go('home')" aria-label="${t("Back")}">${I("back")}</button><div class="w-top" style="margin-bottom:14px"><h2 style="margin:0">${t("Profile")}</h2>${langSw()}</div><div class="rows" style="margin-bottom:16px"><div class="row">${I("phone")}<div><b style="font-weight:500">${ph}</b><div class="sub">${t("Protected by your PIN")}</div></div></div></div><button type="button" class="b o" onclick="U=null;ph=null;go('welcome')">${t("Log out")}</button><button type="button" class="b o" onclick="rq()">${t("Reset prototype data")}</button><p class="m" style="margin-top:12px">${t("Prototype only. There is no server: data stays on this device, and no SMS is sent.")}</p>`,
                 );
             }
             function rq() {
@@ -1921,10 +2118,19 @@
                 go("welcome");
             }
 
-            const tt = (r) => (r == "a" ? t("Antenatal visit") : t(tg(r).n));
+            const tt = (r) =>
+                r == "a"
+                    ? t("Antenatal visit")
+                    : r[0] == "c"
+                      ? tg(r).title
+                          ? E(tg(r).title)
+                          : t("Clinic visit")
+                      : t(tg(r).n);
             const tg = (r) => {
                 if (r == "a") return U.appt;
                 const p = r.split(":");
+                if (r[0] == "c")
+                    return (U.appts || []).find((x) => x.id === p[1]);
                 return r[0] == "m" ? U.tt[p[1]] : U.kids[p[1]].doses[p[2]];
             };
             const mi = (r) => {
@@ -1932,12 +2138,13 @@
                 return `<div class="mi"><div class="mi-r"><b>${t("Protects against:")}</b><span>${t(m[3])}</span></div><div class="mi-r"><b>${t("When:")}</b><span>${t(m[4])}</span></div><div class="mi-r"><b>${t("Dose:")}</b><span>${t(m[5])}</span></div><div class="mi-r"><b>${t("Route:")}</b><span>${t(m[6])}</span></div><div class="mi-r"><b>${t("Site:")}</b><span>${t(m[7])}</span></div></div>`;
             };
             function act(r) {
+                const c = r[0] == "c" ? tg(r) : null;
                 sheet(
-                    `<h3>${tt(r)}</h3>${r == "a" ? `<p class="m">${U.appt.src == "doctor" ? t("This date came from your clinic card.") : t("Kibondo estimated this date from your pregnancy weeks. Ask your clinic to confirm it.")}</p>` : mi(r)}<button type="button" class="b" onclick="wt('${r}')">${I("check")}${t("I went")}</button><button type="button" class="b o" onclick="ms('${r}')">${I("x")}${t("I missed it")}</button><button type="button" class="b o" onclick="ch('${r}')">${I("edit")}${t("Change date")}</button>`,
+                    `<h3>${tt(r)}</h3>${r == "a" ? `<p class="m">${U.appt.src == "doctor" ? t("This date came from your clinic card.") : t("Kibondo estimated this date from your pregnancy weeks. Ask your clinic to confirm it.")}</p>` : c ? `<p class="m">${c.who ? E(c.who) + " · " : ""}${fm(c.due)}</p>` : mi(r)}<button type="button" class="b" onclick="wt('${r}')">${I("check")}${t("I went")}</button><button type="button" class="b o" onclick="ms('${r}')">${I("x")}${t("I missed it")}</button><button type="button" class="b o" onclick="ch('${r}')">${I("edit")}${t("Change date")}</button>${c ? `<button type="button" class="b o" onclick="delAppt('${c.id}')">${t("Remove appointment")}</button>` : ""}`,
                 );
             }
             function wt(r) {
-                const a = r == "a";
+                const a = r == "a" || r[0] == "c";
                 sheet(
                     `<h3>${a ? t("Next date on your card?") : t("Date the dose was given")}</h3>${DB("x")}${a ? "" : `<p class="m">${t("Next date from the card (optional)")}</p>` + DB("n")}<p id="er" class="er"></p><button type="button" class="b" onclick="wd('${r}')">${t("Save")}</button>${a ? `<button type="button" class="b o" onclick="wd('${r}',1)">${t("No next date")}</button>` : ""}`,
                 );
@@ -1945,23 +2152,41 @@
             function wd(r, s) {
                 const e = $("#er"),
                     a = r == "a",
+                    c = r[0] == "c",
                     x = RD("x"),
                     t0 = td();
                 if (a) {
-                    if (!s && (!x || isNaN(x) || x < t0))
+                    if (!s && (x === null || isNaN(x) || x < t0))
                         return (e.textContent = dErr(x));
                     U.ai++;
                     U.appt = s ? nextAnc() : { due: x, src: "doctor" };
+                } else if (c) {
+                    if (!s && (x === null || isNaN(x) || x < t0))
+                        return (e.textContent = dErr(x));
+                    const u = tg(r);
+                    u.done = true;
+                    u.given = t0;
+                    if (!s)
+                        U.appts.push({
+                            id: String(Date.now()),
+                            who: u.who,
+                            title: u.title,
+                            due: x,
+                            src: "doctor",
+                        });
                 } else {
                     const d = tg(r),
                         n = RD("n");
-                    if (!x || isNaN(x) || x > t0)
-                        return (e.textContent = !x
-                            ? t("Type the date the dose was given.")
-                            : isNaN(x)
-                              ? dErr(x)
-                              : t("The date given cannot be in the future."));
-                    if (isNaN(n) || (n && n < t0))
+                    if (x === null || isNaN(x) || x > t0)
+                        return (e.textContent =
+                            x === null
+                                ? t("Type the date the dose was given.")
+                                : isNaN(x)
+                                  ? dErr(x)
+                                  : t(
+                                        "The date given cannot be in the future.",
+                                    ));
+                    if (isNaN(n) || (n !== null && n < t0))
                         return (e.textContent = dErr(n));
                     d.done = true;
                     d.given = x;
@@ -1993,7 +2218,7 @@
             }
             function sd(r) {
                 const x = RD("x");
-                if (!x || isNaN(x) || x < td())
+                if (x === null || isNaN(x) || x < td())
                     return ($("#er").textContent = dErr(x));
                 const u = tg(r);
                 u.due = x;
