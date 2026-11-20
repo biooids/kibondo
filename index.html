@@ -1,0 +1,2019 @@
+<!doctype html>
+<html lang="rw">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <title>Kibondo prototype</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700&family=Inter:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg: #fdf2f8;
+                --card: #ffffff;
+                --ink: #3a1428;
+                --mut: #7a5568;
+                --pk: #be185d;
+                --on-pk: #ffffff;
+                --bd: #a87891;
+                --ln: #f0d4e1;
+                --ok: #15803d;
+                --wn: #b45309;
+                color-scheme: light;
+                box-sizing: border-box;
+                padding-top: env(safe-area-inset-top, 0px);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme="light"]) {
+                    --bg: #1d1317;
+                    --card: #291b21;
+                    --ink: #fbeef2;
+                    --mut: #cfb0bd;
+                    --pk: #f472a5;
+                    --on-pk: #2a0a18;
+                    --bd: #8a6678;
+                    --ln: #46303a;
+                    --ok: #4cc79b;
+                    --wn: #f0a050;
+                    color-scheme: dark;
+                }
+            }
+            :root[data-theme="dark"] {
+                --bg: #1d1317;
+                --card: #291b21;
+                --ink: #fbeef2;
+                --mut: #cfb0bd;
+                --pk: #f472a5;
+                --on-pk: #2a0a18;
+                --bd: #8a6678;
+                --ln: #46303a;
+                --ok: #4cc79b;
+                --wn: #f0a050;
+                color-scheme: dark;
+            }
+            html {
+                scroll-padding-top: env(safe-area-inset-top, 0px);
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--ink);
+                font:
+                    400 16px/1.45 "Inter",
+                    system-ui,
+                    sans-serif;
+                display: grid;
+                place-items: center;
+                min-height: 100vh;
+            }
+            #app {
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                scrollbar-width: none;
+            }
+            #app::-webkit-scrollbar {
+                display: none;
+            }
+            .phone {
+                position: relative;
+                box-sizing: border-box;
+                width: 396px;
+                height: min(860px, calc(100vh - 24px));
+                padding: 14px;
+                border-radius: 60px;
+                background: #0d0c10;
+                border: 2px solid #34323a;
+            }
+            .phone::before,
+            .phone::after {
+                content: "";
+                position: absolute;
+                width: 4px;
+                border-radius: 3px;
+                background: #26242b;
+            }
+            .phone::before {
+                left: -5px;
+                top: 160px;
+                height: 64px;
+            }
+            .phone::after {
+                right: -5px;
+                top: 210px;
+                height: 96px;
+            }
+            .screen {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                border-radius: 46px;
+                overflow: hidden;
+                background: var(--bg);
+                transform: translateZ(0);
+                display: flex;
+                flex-direction: column;
+            }
+            .sb {
+                flex: none;
+                height: 50px;
+                padding: 6px 28px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 15px;
+                font-weight: 500;
+                position: relative;
+                z-index: 5;
+            }
+            .sb span {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+            }
+            .island {
+                position: absolute;
+                top: 11px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 112px;
+                height: 32px;
+                border-radius: 20px;
+                background: #000;
+            }
+            .island::after {
+                content: "";
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #1e293b;
+            }
+            .hi {
+                position: absolute;
+                bottom: 7px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 128px;
+                height: 5px;
+                border-radius: 3px;
+                background: var(--ink);
+                opacity: 0.45;
+                z-index: 25;
+                pointer-events: none;
+            }
+            .screen nav {
+                padding-bottom: 10px;
+            }
+            @media (max-width: 520px) {
+                body {
+                    display: block;
+                }
+                .phone {
+                    width: auto;
+                    height: auto;
+                    padding: 0;
+                    border-radius: 0;
+                    background: none;
+                    border: 0;
+                }
+                .phone::before,
+                .phone::after,
+                .sb,
+                .hi {
+                    display: none;
+                }
+                .screen {
+                    height: auto;
+                    min-height: 100vh;
+                    border-radius: 0;
+                    overflow: visible;
+                    transform: none;
+                    display: block;
+                }
+                #app {
+                    overflow: visible;
+                    min-height: 100vh;
+                }
+                .screen nav {
+                    padding-bottom: 0;
+                }
+            }
+            .pg {
+                flex: 1;
+                padding: 20px 18px 28px;
+            }
+            h1,
+            h2,
+            h3,
+            .disp {
+                font-family: "Bricolage Grotesque", system-ui, sans-serif;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }
+            h1 {
+                font-size: 26px;
+                line-height: 1.2;
+                margin: 0 0 4px;
+            }
+            h2 {
+                font-size: 22px;
+                line-height: 1.25;
+                margin: 0 0 14px;
+            }
+            h3 {
+                font-size: 19px;
+                line-height: 1.3;
+                margin: 0 0 12px;
+            }
+            .m {
+                color: var(--mut);
+                font-size: 14px;
+                margin: 4px 0 8px;
+            }
+            label.m {
+                display: block;
+            }
+            .i {
+                width: 22px;
+                height: 22px;
+                flex: none;
+                color: var(--pk);
+            }
+            button {
+                font-family: "Inter", system-ui, sans-serif;
+            }
+            .b {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                min-height: 48px;
+                border: 0;
+                border-radius: 8px;
+                padding: 12px 16px;
+                font:
+                    500 16px/1.3 "Inter",
+                    system-ui,
+                    sans-serif;
+                background: var(--pk);
+                color: var(--on-pk);
+                margin: 8px 0;
+                cursor: pointer;
+                text-align: center;
+            }
+            .b .i {
+                color: currentColor;
+            }
+            .b:hover,
+            .b:active {
+                opacity: 0.9;
+            }
+            .b.o {
+                background: transparent;
+                color: var(--pk);
+                border: 1.5px solid var(--pk);
+            }
+            .b.o:hover,
+            .b.o:active {
+                background: var(--card);
+                opacity: 1;
+            }
+            .b:disabled {
+                opacity: 0.45;
+                cursor: not-allowed;
+            }
+            button:focus-visible,
+            input:focus-visible {
+                outline: 3px solid var(--pk);
+                outline-offset: 2px;
+            }
+            .bk {
+                border: 0;
+                background: none;
+                color: var(--pk);
+                min-width: 44px;
+                min-height: 44px;
+                padding: 0;
+                margin: 0 0 6px -10px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .lk {
+                border: 0;
+                background: none;
+                color: var(--pk);
+                font:
+                    500 16px/1.3 "Inter",
+                    system-ui,
+                    sans-serif;
+                text-decoration: underline;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                min-height: 44px;
+                margin: 4px auto 0;
+                padding: 8px;
+            }
+            .lk:hover,
+            .lk:active {
+                opacity: 0.8;
+            }
+            input {
+                width: 100%;
+                min-height: 48px;
+                box-sizing: border-box;
+                padding: 12px;
+                border: 1.5px solid var(--bd);
+                border-radius: 8px;
+                background: var(--card);
+                color: var(--ink);
+                font:
+                    400 16px/1.4 "Inter",
+                    system-ui,
+                    sans-serif;
+                margin: 4px 0 10px;
+            }
+            input:focus {
+                border-color: var(--pk);
+            }
+            .dt {
+                display: flex;
+                gap: 8px;
+            }
+            .dt input {
+                text-align: center;
+                flex: 1;
+                min-width: 0;
+                width: auto;
+            }
+            .dt input:last-child {
+                flex: 1.8;
+            }
+            .seg {
+                display: inline-flex;
+                border: 1.5px solid var(--pk);
+                border-radius: 8px;
+                overflow: hidden;
+                background: var(--card);
+            }
+            .seg.eq {
+                display: flex;
+                width: 100%;
+                margin: 0 0 14px;
+            }
+            .seg button {
+                border: 0;
+                background: transparent;
+                color: var(--pk);
+                min-height: 44px;
+                padding: 8px 12px;
+                font:
+                    500 14px/1.25 "Inter",
+                    system-ui,
+                    sans-serif;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .seg button + button {
+                border-left: 1.5px solid var(--pk);
+            }
+            .seg.eq button {
+                flex: 1;
+                min-width: 0;
+            }
+            .seg button.on {
+                background: var(--pk);
+                color: var(--on-pk);
+            }
+            .seg button:not(.on):hover {
+                opacity: 0.82;
+            }
+            .stp {
+                height: 4px;
+                background: var(--ln);
+                border-radius: 4px;
+                overflow: hidden;
+                margin: 0 0 14px;
+            }
+            .stp i {
+                display: block;
+                height: 100%;
+                background: var(--pk);
+            }
+            .w-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+            }
+            .wm {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-family: "Bricolage Grotesque", system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 20px;
+                color: var(--ink);
+            }
+            .wm .i {
+                width: 24px;
+                height: 24px;
+                color: var(--pk);
+            }
+            .big1000 {
+                font-family: "Bricolage Grotesque", system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 108px;
+                line-height: 0.95;
+                color: var(--pk);
+                margin: 20px 0 8px;
+                letter-spacing: -0.04em;
+            }
+            .w-h1 {
+                font-size: 23px;
+                line-height: 1.25;
+                margin: 0 0 18px;
+            }
+            .tl {
+                margin: 0 0 18px;
+            }
+            .tl-bar {
+                display: flex;
+                gap: 4px;
+                height: 10px;
+            }
+            .tl-bar span {
+                display: block;
+                height: 100%;
+                border-radius: 2px;
+                background: var(--pk);
+            }
+            .tl-bar span:nth-child(2) {
+                opacity: 0.55;
+            }
+            .tl-bar span:nth-child(3) {
+                opacity: 0.25;
+            }
+            .tl-lbl {
+                display: flex;
+                gap: 4px;
+                margin-top: 6px;
+                font-size: 13px;
+                color: var(--mut);
+            }
+            .tl-lbl span {
+                min-width: 0;
+            }
+            .rows {
+                border-top: 1px solid var(--ln);
+                border-bottom: 1px solid var(--ln);
+            }
+            .row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 0;
+                min-height: 44px;
+                box-sizing: border-box;
+            }
+            .row + .row {
+                border-top: 1px solid var(--ln);
+            }
+            .row > div {
+                flex: 1;
+                min-width: 0;
+            }
+            .grp {
+                background: var(--card);
+                border: 1px solid var(--ln);
+                border-radius: 8px;
+                overflow: hidden;
+                margin: 0 0 14px;
+            }
+            .grow {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                width: 100%;
+                min-height: 56px;
+                padding: 12px 14px;
+                box-sizing: border-box;
+                border: 0;
+                background: transparent;
+                color: var(--ink);
+                font:
+                    400 16px/1.4 "Inter",
+                    system-ui,
+                    sans-serif;
+                text-align: left;
+                cursor: pointer;
+            }
+            .grow.st {
+                cursor: default;
+            }
+            .grow + .grow {
+                border-top: 1px solid var(--ln);
+            }
+            button.grow:hover,
+            button.grow:active {
+                background: var(--bg);
+            }
+            .grow > div {
+                flex: 1;
+                min-width: 0;
+            }
+            .grow b {
+                font-weight: 500;
+                display: block;
+            }
+            .sub {
+                color: var(--mut);
+                font-size: 13px;
+                margin-top: 2px;
+            }
+            .st {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--pk);
+                flex: none;
+                white-space: nowrap;
+                padding: 3px 6px;
+                border-radius: 4px;
+            }
+            .st i {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: currentColor;
+                flex: none;
+            }
+            .st.ok {
+                color: var(--ok);
+            }
+            .st.wn {
+                color: var(--wn);
+            }
+            .hhdr {
+                background: var(--pk);
+                color: var(--on-pk);
+                padding: 20px 18px 18px;
+            }
+            .hhdr .gr {
+                font-size: 14px;
+                opacity: 0.92;
+                margin: 0 0 4px;
+            }
+            .hhdr .ht {
+                font-family: "Bricolage Grotesque", system-ui, sans-serif;
+                font-weight: 700;
+                font-size: 30px;
+                line-height: 1.15;
+                margin: 0;
+            }
+            .hhdr .hd {
+                font-size: 14px;
+                opacity: 0.92;
+                margin: 6px 0 0;
+            }
+            .hbar {
+                height: 5px;
+                background: rgba(255, 255, 255, 0.28);
+                border-radius: 4px;
+                overflow: hidden;
+                margin-top: 12px;
+            }
+            .hbar i {
+                display: block;
+                height: 100%;
+                background: var(--on-pk);
+            }
+            :root[data-theme="dark"] .hbar {
+                background: rgba(42, 10, 24, 0.25);
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme="light"]) .hbar {
+                    background: rgba(42, 10, 24, 0.25);
+                }
+            }
+            .tipblk {
+                border-top: 1px solid var(--ln);
+                padding: 14px 0 6px;
+                margin: 6px 0 10px;
+            }
+            .tipblk b {
+                display: block;
+                font-weight: 500;
+                margin-bottom: 4px;
+            }
+            .chk {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                width: 100%;
+                min-height: 56px;
+                padding: 12px 14px;
+                box-sizing: border-box;
+                cursor: pointer;
+            }
+            .chk + .chk {
+                border-top: 1px solid var(--ln);
+            }
+            .chk input {
+                width: 22px;
+                height: 22px;
+                min-height: 22px;
+                margin: 0;
+                flex: none;
+                accent-color: var(--pk);
+            }
+            .er {
+                color: var(--wn);
+                font-size: 14px;
+                margin: 0 0 8px;
+            }
+            nav {
+                position: sticky;
+                bottom: 0;
+                display: flex;
+                min-height: 56px;
+                background: var(--card);
+                border-top: 1px solid var(--ln);
+            }
+            nav button {
+                flex: 1;
+                min-width: 0;
+                min-height: 56px;
+                border: 0;
+                border-top: 2px solid transparent;
+                background: none;
+                color: var(--mut);
+                padding: 6px 2px 8px;
+                font:
+                    500 13px/1.2 "Inter",
+                    system-ui,
+                    sans-serif;
+                display: grid;
+                justify-items: center;
+                align-content: center;
+                gap: 3px;
+                cursor: pointer;
+            }
+            nav button .i {
+                width: 20px;
+                height: 20px;
+                color: currentColor;
+            }
+            nav button.on {
+                color: var(--pk);
+                border-top-color: var(--pk);
+            }
+            nav button:hover {
+                color: var(--pk);
+            }
+            .sheet {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 20;
+            }
+            .sheet.on {
+                display: block;
+            }
+            .ov {
+                position: absolute;
+                inset: 0;
+                background: rgba(20, 6, 14, 0.5);
+            }
+            .pn {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                max-width: 430px;
+                margin: auto;
+                background: var(--card);
+                border-top: 1px solid var(--ln);
+                border-radius: 12px 12px 0 0;
+                padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+                max-height: 88%;
+                overflow: auto;
+            }
+            .mi {
+                border-top: 1px solid var(--ln);
+                border-bottom: 1px solid var(--ln);
+                margin: 0 0 14px;
+            }
+            .mi-r {
+                display: grid;
+                grid-template-columns: minmax(108px, 36%) 1fr;
+                gap: 10px;
+                padding: 10px 0;
+                font-size: 14px;
+                line-height: 1.45;
+            }
+            .mi-r + .mi-r {
+                border-top: 1px solid var(--ln);
+            }
+            .mi-r b {
+                font-weight: 500;
+                color: var(--mut);
+            }
+            #toast {
+                position: fixed;
+                left: 50%;
+                bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+                transform: translateX(-50%);
+                background: var(--ink);
+                color: var(--bg);
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-size: 14px;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s;
+                max-width: 88%;
+                text-align: center;
+                z-index: 30;
+            }
+            #toast.on {
+                opacity: 1;
+            }
+            .pg.in {
+                animation: pin 0.28s cubic-bezier(0.2, 0.7, 0.3, 1);
+            }
+            @keyframes pin {
+                from {
+                    opacity: 0;
+                    transform: translateY(12px);
+                }
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+            @keyframes fd {
+                from {
+                    opacity: 0;
+                }
+            }
+            @keyframes up {
+                from {
+                    transform: translateY(100%);
+                }
+            }
+            .b,
+            .grow,
+            nav button,
+            input,
+            .seg button {
+                transition:
+                    background-color 0.18s,
+                    border-color 0.18s,
+                    color 0.18s,
+                    opacity 0.18s;
+            }
+            .sheet.on .ov {
+                animation: fd 0.25s;
+            }
+            .sheet.on .pn {
+                animation: up 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+            }
+            .sheet.st .ov,
+            .sheet.st .pn {
+                animation: none;
+            }
+            .sheet.out .ov {
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+            .sheet.out .pn {
+                transform: translateY(100%);
+                transition: transform 0.2s;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="phone">
+            <div class="screen">
+                <div class="sb">
+                    <span id="clk">9:41</span>
+                    <div class="island"></div>
+                    <span
+                        ><svg
+                            width="18"
+                            height="12"
+                            viewBox="0 0 18 12"
+                            fill="currentColor"
+                            aria-hidden="true"
+                        >
+                            <rect x="0" y="8" width="3" height="4" rx="1" />
+                            <rect x="5" y="5" width="3" height="7" rx="1" />
+                            <rect x="10" y="2" width="3" height="10" rx="1" />
+                            <rect
+                                x="15"
+                                y="0"
+                                width="3"
+                                height="12"
+                                rx="1"
+                            /></svg
+                        ><svg
+                            width="16"
+                            height="12"
+                            viewBox="0 0 16 12"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linecap="round"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M1 4.5a10 10 0 0 1 14 0M3.5 7.2a6.5 6.5 0 0 1 9 0"
+                            />
+                            <circle
+                                cx="8"
+                                cy="10"
+                                r="1"
+                                fill="currentColor"
+                                stroke="none"
+                            /></svg
+                        ><svg
+                            width="26"
+                            height="12"
+                            viewBox="0 0 26 12"
+                            fill="none"
+                            stroke="currentColor"
+                            aria-hidden="true"
+                        >
+                            <rect
+                                x=".5"
+                                y=".5"
+                                width="22"
+                                height="11"
+                                rx="3.5"
+                            />
+                            <rect
+                                x="2.5"
+                                y="2.5"
+                                width="16"
+                                height="7"
+                                rx="2"
+                                fill="currentColor"
+                                stroke="none"
+                            />
+                            <path d="M24.5 4v4" stroke-linecap="round" /></svg
+                    ></span>
+                </div>
+                <div id="app"></div>
+                <div id="sheet" class="sheet"></div>
+                <div id="toast" role="status"></div>
+                <div class="hi"></div>
+            </div>
+        </div>
+        <script>
+            const $ = (s) => document.querySelector(s),
+                D = 864e5;
+            let S;
+            try {
+                S = JSON.parse(localStorage.getItem("kib2")) || { acc: {} };
+            } catch (e) {
+                S = { acc: {} };
+            }
+            const RW = {
+                // Welcome and account
+                "Never miss a visit or a vaccine in your child’s first 1000 days.":
+                    "Ntuzacikwe n’isuzuma cyangwa urukingo mu minsi 1000 ya mbere y’umwana wawe.",
+                Pregnancy: "Inda", // REVIEW
+                "Year 1": "Umwaka wa 1", // REVIEW
+                "Year 2": "Umwaka wa 2", // REVIEW
+                "Visit reminders": "Kwibutswa gahunda yo kwa muganga", // REVIEW
+                "Vaccine schedule": "Gahunda y’inkingo",
+                "Trusted tips": "Inama zizewe",
+                "Create account": "Fungura konti",
+                "I already have an account": "Nsanzwe mfite konti",
+                "Create your account": "Fungura konti yawe",
+                "It takes less than a minute.": "Bitwara munsi y’umunota umwe.",
+                "Your first name": "Izina ryawe rya mbere", // REVIEW
+                "Phone number": "Nimero ya telefoni",
+                "Choose a 4-digit PIN":
+                    "Hitamo umubare w’ibanga (PIN) w’imibare 4",
+                "Type the PIN again": "Ongera wandike PIN",
+                PIN: "PIN",
+                "4-digit PIN": "PIN y’imibare 4",
+                "Type your first name.": "Andika izina ryawe rya mbere.",
+                "Enter a 10-digit number starting with 07.":
+                    "Andika nimero y’imibare 10 itangirana na 07.",
+                "The PIN must be 4 digits.":
+                    "PIN igomba kuba igizwe n’imibare 4.",
+                "The two PINs do not match.": "PIN zombi ntizihuye.",
+                "This number already has an account. Log in instead.":
+                    "Iyi nimero isanzwe ifite konti. Injira.",
+                "Welcome back": "Urakaza neza", // REVIEW
+                "Log in with your phone number and PIN.":
+                    "Injira ukoresheje nimero ya telefoni na PIN yawe.",
+                "Log in": "Injira",
+                "Forgot PIN?": "Wibagiwe PIN?",
+                "Create a new account": "Fungura konti nshya",
+                "In the real app, a 6-digit code is sent by SMS.":
+                    "Muri porogaramu nyayo, hoherezwa kode y’imibare 6 kuri SMS.",
+                "No account for this number. Create one first.":
+                    "Nta konti ihari kuri iyi nimero. Banza ufungure konti.",
+                "Wrong PIN. Try again.": "PIN siyo. Ongera ugerageze.",
+                // Pregnancy setup
+                "Are you pregnant?": "Uratwite?",
+                Yes: "Yego",
+                No: "Oya",
+                "How far along are you?": "Inda yawe igeze he?",
+                "I know the weeks": "Nzi ibyumweru",
+                "I know my due date": "Nzi itariki yo kubyara",
+                "Weeks pregnant (1 to 42)":
+                    "Ibyumweru utwite (1 kugeza kuri 42)",
+                "Due date": "Itariki yo kubyara",
+                "Next appointment from your card (optional)":
+                    "Gahunda itaha iri ku ikarita yawe (si itegeko)", // REVIEW (ikarita or ifishi)
+                Continue: "Komeza",
+                "Weeks must be from 1 to 42. Please check with your health center.":
+                    "Ibyumweru bigomba kuba hagati ya 1 na 42. Baza ikigo nderabuzima cyawe.",
+                "Type the due date.": "Andika itariki yo kubyara.",
+                "Please check this date with your health center.":
+                    "Nyamuneka baza ikigo nderabuzima cyawe kuri iyi tariki.",
+                " You can also leave it empty.": " Ushobora no kutayandika.",
+                // Child setup
+                "Do you have a child under 2 years?":
+                    "Ufite umwana uri munsi y’imyaka 2?",
+                "Your baby": "Umwana wawe",
+                "Your child": "Umwana wawe",
+                "Name or nickname": "Izina cyangwa akabyiniriro",
+                "Birth date": "Itariki y’amavuko",
+                "Save and add another": "Bika wongere undi",
+                "Save and finish": "Bika urangize",
+                Save: "Bika",
+                "Type the name.": "Andika izina.",
+                "Type a valid birth date.": "Andika itariki y’amavuko yemewe.",
+                "The birth date cannot be in the future.":
+                    "Itariki y’amavuko ntishobora kuba iri imbere.",
+                "Kibondo follows children until 2 years.":
+                    "Kibondo ikurikirana abana kugeza ku myaka 2.",
+                "The birth date is before the pregnancy start.":
+                    "Itariki y’amavuko iri mbere y’itangira ry’inda.",
+                "Already given?": "Ni izihe nkingo yamaze guhabwa?", // REVIEW
+                "Tick the vaccines {0} already received, so they are not reminded again.":
+                    "Hitamo inkingo {0} yamaze guhabwa, kugira ngo zitazongera kukwibutswa.",
+                "Due {0}": "Itariki iteganyijwe: {0}",
+                // Home
+                "Nothing to track yet.": "Nta kintu cyo gukurikirana kirahari.",
+                "Add a baby": "Ongeraho umwana",
+                "I am pregnant": "Ndatwite",
+                "Week {0} of pregnancy": "Inda y’ibyumweru {0}",
+                "Antenatal visit": "Gahunda yo kwisuzumisha inda",
+                "from your card": "iri ku ikarita yawe",
+                "estimated by Kibondo": "igereranyijwe na Kibondo", // REVIEW
+                "Did you go?": "Wagiyeyo?",
+                "No more visits in the schedule.": "Nta yindi gahunda isigaye.",
+                "{0} is {1} old": "{0} afite {1}",
+                "1 day": "umunsi 1",
+                "{0} days": "iminsi {0}",
+                "{0} weeks": "ibyumweru {0}",
+                "{0} months": "amezi {0}",
+                "{0}: all vaccines done.": "{0}: inkingo zose zarahawe.", // REVIEW
+                "{0} for you": "{0} yawe", // REVIEW
+                "Protects against tetanus, {0}": "Irinda tetanosi, {0}",
+                Tip: "Inama",
+                "My baby is born": "Umwana wanjye yavutse",
+                // Birth screen
+                "Has your baby been born?": "Umwana wawe yavutse?",
+                "Not yet": "Ntaravuka",
+                "I am no longer pregnant": "Sinkitwite",
+                "We are here for you. Pregnancy reminders are stopped.":
+                    "Turi kumwe nawe. Ibyibutsa by’inda byahagaritswe.", // REVIEW
+                // Vaccines tab
+                Vaccines: "Inkingo",
+                "Add a pregnancy or a baby from Home to see the vaccine list.":
+                    "Ongeraho inda cyangwa umwana ahabanza kugira ngo ubone urutonde rw’inkingo.",
+                Mother: "Umubyeyi",
+                "Protects against {0}": "Irinda {0}",
+                "Given {0}": "Yahawe: {0}",
+                "Already given": "Yarahawe",
+                ", from your card": ", iri ku ikarita",
+                ", estimated": ", igereranyijwe",
+                "Sample content from a schedule chart. The real Rwanda schedule must come from doctors.":
+                    "Ibi ni icyitegererezo cyakuwe ku mbonerahamwe y’inkingo. Gahunda nyayo y’u Rwanda igomba gutangwa na muganga.",
+                Done: "Byakozwe", // REVIEW
+                Overdue: "Yarengeje igihe", // REVIEW
+                "Due soon": "Iri hafi", // REVIEW
+                Upcoming: "Iri imbere", // REVIEW
+                // Tips
+                Tips: "Inama",
+                "No approved tip for this stage yet.":
+                    "Nta nama yemejwe kuri iki cyiciro kirahari.",
+                "Sample text for the prototype. Real tips are written or approved by doctors, in Kinyarwanda.":
+                    "Iyi nyandiko ni icyitegererezo. Inama nyazo zandikwa cyangwa zemezwa na muganga, mu Kinyarwanda.",
+                "Keep your clinic card in a safe place and bring it to every visit.":
+                    "Bika neza ikarita yawe yo kwa muganga kandi uyitwaze igihe cyose ugiye kwisuzumisha.",
+                "Write your questions down before each visit.":
+                    "Andika ibibazo ushaka kubaza mbere y’uko ujya kwisuzumisha.",
+                "Keep {0}’s vaccination card with your phone.":
+                    "Bika ikarita y’inkingo ya {0} hamwe na telefoni yawe.",
+                // Navigation and profile
+                Home: "Ahabanza",
+                Profile: "Umwirondoro",
+                Language: "Ururimi",
+                "Protected by your PIN": "Irinzwe na PIN yawe",
+                "Log out": "Sohoka",
+                "Reset prototype data": "Siba amakuru y’igerageza",
+                "Prototype only. There is no server: data stays on this device, and no SMS is sent.":
+                    "Ni igerageza gusa. Nta seriveri ihari: amakuru aguma kuri iyi telefoni, kandi nta SMS zoherezwa.",
+                "Remove all prototype data?":
+                    "Gusiba amakuru yose y’igerageza?",
+                "Yes, remove": "Yego, siba",
+                Cancel: "Hagarika",
+                // Action sheets
+                "This date came from your clinic card.":
+                    "Iyi tariki yavuye ku ikarita yawe yo kwa muganga.",
+                "Kibondo estimated this date from your pregnancy weeks. Ask your clinic to confirm it.":
+                    "Kibondo yagereranyije iyi tariki hakurikijwe ibyumweru by’inda yawe. Baza ikigo nderabuzima cyawe kuyemeza.", // REVIEW
+                "Protects against:": "Irinda:",
+                "When:": "Igihe:",
+                "Dose:": "Doze:",
+                "Route:": "Uburyo butangwamo:", // REVIEW
+                "Site:": "Aho itangirwa:", // REVIEW
+                "I went": "Nagiyeyo",
+                "I missed it": "Ntabwo nagiyeyo",
+                "Change date": "Hindura itariki",
+                "Next date on your card?":
+                    "Itariki itaha iri ku ikarita yawe ni iyihe?",
+                "Date the dose was given": "Itariki doze yahawemo",
+                "Next date from the card (optional)":
+                    "Itariki itaha iri ku ikarita (si itegeko)",
+                "No next date": "Nta tariki itaha",
+                "Type the date the dose was given.":
+                    "Andika itariki doze yahawemo.",
+                "The date given cannot be in the future.":
+                    "Itariki yahawemo ntishobora kuba iri imbere.",
+                "The next date must be valid and from today onward.":
+                    "Itariki itaha igomba kuba yemewe kandi guhera uyu munsi.",
+                Saved: "Byabitswe",
+                "When is your new appointment?": "Gahunda yawe nshya ni ryari?",
+                "I don’t know yet": "Sindabimenya",
+                "Please go to your health center and ask for a new date.":
+                    "Jya ku kigo nderabuzima cyawe usabe itariki nshya.",
+                "New date from the doctor": "Itariki nshya yatanzwe na muganga",
+                "New date saved": "Itariki nshya yabitswe",
+                // Date errors
+                "Type the date: day, month and year.":
+                    "Andika itariki: umunsi, ukwezi n’umwaka.",
+                "That date does not exist. Check the day, month and year.":
+                    "Iyi tariki ntibaho. Ongera urebe umunsi, ukwezi n’umwaka.",
+                "That date has already passed. Type {0} or a later date.":
+                    "Iyi tariki yarenze. Andika {0} cyangwa itariki ikurikiraho.",
+                // Vaccine details (displayed from the VX list)
+                Tuberculosis: "Igituntu",
+                "Hepatitis B": "Hepatite B",
+                Polio: "Imbasa",
+                "Diphtheria, whooping cough, tetanus":
+                    "Agapfura, kokolishi, tetanosi",
+                Measles: "Iseru",
+                "Vitamin A deficiency": "Kubura vitamine A", // REVIEW
+                Tetanus: "Tetanosi",
+                "Not listed": "Ntiribonetse",
+                "Hepatitis B, birth dose": "Hepatite B, doze yo ku ivuka",
+                "Hepatitis B 1": "Hepatite B 1",
+                "Hepatitis B 2": "Hepatite B 2",
+                "Hepatitis B 3": "Hepatite B 3",
+                "Vitamin A, 1st dose": "Vitamine A, doze ya 1",
+                "Measles, 2nd dose": "Iseru, doze ya 2",
+                "Vitamin A, 2nd dose": "Vitamine A, doze ya 2",
+                "DPT booster": "DPT yo kongera", // REVIEW
+                "OPV booster": "OPV yo kongera", // REVIEW
+                "At birth, or as early as possible up to 1 year":
+                    "Umwana akivuka, cyangwa vuba bishoboka kugeza ku mwaka 1",
+                "At birth, or within 24 hours":
+                    "Umwana akivuka, cyangwa mu masaha 24",
+                "At birth, or within the first 15 days":
+                    "Umwana akivuka, cyangwa mu minsi 15 ya mbere",
+                "At 6 weeks": "Ku byumweru 6",
+                "At 10 weeks": "Ku byumweru 10",
+                "At 14 weeks": "Ku byumweru 14",
+                "At 9 completed months, up to 12 months":
+                    "Ku mezi 9 yuzuye, kugeza ku mezi 12",
+                "At 9 months, with measles":
+                    "Ku mezi 9, hamwe n’urukingo rw’iseru",
+                "At 16 to 24 months": "Hagati y’amezi 16 na 24",
+                "At 16 months": "Ku mezi 16",
+                "Early in pregnancy": "Inda ikiri nto", // REVIEW
+                "4 weeks after TT-1": "Ibyumweru 4 nyuma ya TT-1",
+                "0.1 ml (0.05 ml until 1 month)":
+                    "0.1 ml (0.05 ml kugeza ku kwezi 1)",
+                "2 drops": "Ibitonyanga 2",
+                Intradermal: "Mu ruhu", // REVIEW
+                Intramuscular: "Mu gikanu", // REVIEW
+                Oral: "Mu kanwa",
+                Subcutaneous: "Munsi y’uruhu", // REVIEW
+                "Left upper arm": "Hejuru ku kuboko kw’ibumoso",
+                "Right upper arm": "Hejuru ku kuboko kw’iburyo",
+                "Upper arm": "Hejuru ku kuboko",
+                "Outer mid-thigh": "Hanze ku itako",
+                Mouth: "Mu kanwa",
+            };
+            let lang = S.lang || "rw";
+            document.documentElement.lang = lang;
+            const t = (s, ...a) => {
+                let r = lang == "en" ? s : RW[s] || s;
+                a.forEach((v, i) => {
+                    r = r.split("{" + i + "}").join(v);
+                });
+                return r;
+            };
+            function setLang(l) {
+                lang = l;
+                S.lang = l;
+                sv();
+                document.documentElement.lang = l;
+                still = 1;
+                go();
+            }
+            const ageTxt = (n) => {
+                if (n < 28) return t(n == 1 ? "1 day" : "{0} days", n);
+                if (n < 91) return t("{0} weeks", Math.floor(n / 7));
+                return t("{0} months", Math.floor(n / 30.4));
+            };
+            let ph = null,
+                U = null,
+                tab = "welcome",
+                T = {};
+            const sv = () => {
+                try {
+                    localStorage.setItem("kib2", JSON.stringify(S));
+                } catch (e) {}
+            };
+            const td = () => {
+                const d = new Date();
+                return new Date(
+                    d.getFullYear(),
+                    d.getMonth(),
+                    d.getDate(),
+                ).getTime();
+            };
+            const fm = (t) => {
+                const d = new Date(t);
+                return (
+                    String(d.getDate()).padStart(2, "0") +
+                    "/" +
+                    String(d.getMonth() + 1).padStart(2, "0") +
+                    "/" +
+                    d.getFullYear()
+                );
+            };
+            const dErr = (x) =>
+                !x
+                    ? t("Type the date: day, month and year.")
+                    : isNaN(x)
+                      ? t(
+                            "That date does not exist. Check the day, month and year.",
+                        )
+                      : t(
+                            "That date has already passed. Type {0} or a later date.",
+                            fm(td()),
+                        );
+            const E = (s) =>
+                s.replace(
+                    /[&<>"]/g,
+                    (c) =>
+                        ({
+                            "&": "&amp;",
+                            "<": "&lt;",
+                            ">": "&gt;",
+                            '"': "&quot;",
+                        })[c],
+                );
+            const ic = {
+                logo: '<path d="M12 21s-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-8 11-8 11z"/><path d="M12 9v5M9.5 11.5h5"/>',
+                home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+                cal: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>',
+                shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 9v6M9.5 12h5"/>',
+                heart: '<path d="M12 21s-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-8 11-8 11z"/>',
+                bulb: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"/>',
+                user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+                baby: '<circle cx="12" cy="12" r="9"/><path d="M9 10v.5M15 10v.5M9 15c1.5 1.5 4.5 1.5 6 0"/><path d="M12 3c1 1 1.5 2 .5 3"/>',
+                check: '<path d="M5 12l4 4 10-10"/>',
+                x: '<path d="M6 6l12 12M18 6L6 18"/>',
+                edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+                back: '<path d="M15 5l-7 7 7 7"/>',
+                phone: '<rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/>',
+                plus: '<path d="M12 5v14M5 12h14"/>',
+            };
+            const I = (n) =>
+                `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic[n]}</svg>`;
+            const langSw = () =>
+                `<div class="seg" role="group" aria-label="${t("Language")}"><button type="button" class="${lang == "rw" ? "on" : ""}" aria-pressed="${lang == "rw"}" onclick="setLang('rw')">Kinyarwanda</button><button type="button" class="${lang == "en" ? "on" : ""}" aria-pressed="${lang == "en"}" onclick="setLang('en')">English</button></div>`;
+            const stpBar = (n) =>
+                `<div class="stp" aria-hidden="true"><i style="width:${n * 50}%"></i></div>`;
+            const stHtml = (l, c) => `<span class="st ${c}"><i></i>${l}</span>`;
+            const DB = (p) =>
+                `<div class="dt"><input id="${p}d" inputmode="numeric" maxlength="2" placeholder="${lang == "rw" ? "UM" : "DD"}" aria-label="${lang == "rw" ? "Umunsi" : "Day"}"><input id="${p}m" inputmode="numeric" maxlength="2" placeholder="${lang == "rw" ? "UK" : "MM"}" aria-label="${lang == "rw" ? "Ukwezi" : "Month"}"><input id="${p}y" inputmode="numeric" maxlength="4" placeholder="${lang == "rw" ? "UMWAKA" : "YYYY"}" aria-label="${lang == "rw" ? "Umwaka" : "Year"}"></div>`;
+            const RD = (p) => {
+                const g = (k) => $("#" + p + k).value.trim(),
+                    d = g("d"),
+                    m = g("m"),
+                    y = g("y");
+                if (!d && !m && !y) return null;
+                const t = new Date(+y, m - 1, +d);
+                return y.length == 4 &&
+                    t.getDate() == +d &&
+                    t.getMonth() == m - 1
+                    ? t.getTime()
+                    : NaN;
+            };
+            document.addEventListener("input", (e) => {
+                const t = e.target;
+                if (t.closest && t.closest(".dt")) {
+                    t.value = t.value.replace(/\D/g, "");
+                    if (t.value.length == t.maxLength && t.nextElementSibling)
+                        t.nextElementSibling.focus();
+                }
+            });
+            const toast = (m) => {
+                const t = $("#toast");
+                t.textContent = m;
+                t.classList.add("on");
+                setTimeout(() => t.classList.remove("on"), 2800);
+            };
+            let ct;
+            function sheet(h) {
+                clearTimeout(ct);
+                const s = $("#sheet"),
+                    was =
+                        s.classList.contains("on") &&
+                        !s.classList.contains("out");
+                s.classList.remove("out");
+                s.classList.toggle("st", was);
+                s.innerHTML =
+                    '<div class="ov" onclick="cs()"></div><div class="pn">' +
+                    h +
+                    "</div>";
+                s.classList.add("on");
+            }
+            function cs() {
+                const s = $("#sheet");
+                s.classList.add("out");
+                ct = setTimeout(
+                    () => s.classList.remove("on", "out", "st"),
+                    200,
+                );
+            }
+            const ANC = [12, 20, 26, 30, 34, 36, 38, 40];
+            const DPT = "Diphtheria, whooping cough, tetanus";
+            const VX = [
+                [
+                    "bcg",
+                    "BCG",
+                    0,
+                    "Tuberculosis",
+                    "At birth, or as early as possible up to 1 year",
+                    "0.1 ml (0.05 ml until 1 month)",
+                    "Intradermal",
+                    "Left upper arm",
+                ],
+                [
+                    "hb0",
+                    "Hepatitis B, birth dose",
+                    0,
+                    "Hepatitis B",
+                    "At birth, or within 24 hours",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                ],
+                [
+                    "p0",
+                    "OPV-0",
+                    0,
+                    "Polio",
+                    "At birth, or within the first 15 days",
+                    "2 drops",
+                    "Oral",
+                    "Mouth",
+                ],
+                [
+                    "p1",
+                    "OPV 1",
+                    42,
+                    "Polio",
+                    "At 6 weeks",
+                    "2 drops",
+                    "Oral",
+                    "Mouth",
+                ],
+                [
+                    "d1",
+                    "DPT 1",
+                    42,
+                    DPT,
+                    "At 6 weeks",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                ],
+                [
+                    "h1",
+                    "Hepatitis B 1",
+                    42,
+                    "Hepatitis B",
+                    "At 6 weeks",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                ],
+                [
+                    "p2",
+                    "OPV 2",
+                    70,
+                    "Polio",
+                    "At 10 weeks",
+                    "2 drops",
+                    "Oral",
+                    "Mouth",
+                    "p1",
+                    28,
+                ],
+                [
+                    "d2",
+                    "DPT 2",
+                    70,
+                    DPT,
+                    "At 10 weeks",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                    "d1",
+                    28,
+                ],
+                [
+                    "h2",
+                    "Hepatitis B 2",
+                    70,
+                    "Hepatitis B",
+                    "At 10 weeks",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                    "h1",
+                    28,
+                ],
+                [
+                    "p3",
+                    "OPV 3",
+                    98,
+                    "Polio",
+                    "At 14 weeks",
+                    "2 drops",
+                    "Oral",
+                    "Mouth",
+                    "p2",
+                    28,
+                ],
+                [
+                    "d3",
+                    "DPT 3",
+                    98,
+                    DPT,
+                    "At 14 weeks",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                    "d2",
+                    28,
+                ],
+                [
+                    "h3",
+                    "Hepatitis B 3",
+                    98,
+                    "Hepatitis B",
+                    "At 14 weeks",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                    "h2",
+                    28,
+                ],
+                [
+                    "ms1",
+                    "Measles",
+                    270,
+                    "Measles",
+                    "At 9 completed months, up to 12 months",
+                    "0.5 ml",
+                    "Subcutaneous",
+                    "Right upper arm",
+                ],
+                [
+                    "va1",
+                    "Vitamin A, 1st dose",
+                    270,
+                    "Vitamin A deficiency",
+                    "At 9 months, with measles",
+                    "1 ml (100,000 IU)",
+                    "Oral",
+                    "Mouth",
+                ],
+                [
+                    "dB",
+                    "DPT booster",
+                    480,
+                    DPT,
+                    "At 16 to 24 months",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Outer mid-thigh",
+                ],
+                [
+                    "ms2",
+                    "Measles, 2nd dose",
+                    480,
+                    "Measles",
+                    "At 16 to 24 months",
+                    "0.5 ml",
+                    "Subcutaneous",
+                    "Right upper arm",
+                ],
+                [
+                    "pB",
+                    "OPV booster",
+                    480,
+                    "Polio",
+                    "At 16 to 24 months",
+                    "2 drops",
+                    "Oral",
+                    "Mouth",
+                ],
+                [
+                    "va2",
+                    "Vitamin A, 2nd dose",
+                    480,
+                    "Vitamin A deficiency",
+                    "At 16 months",
+                    "2 ml (200,000 IU)",
+                    "Oral",
+                    "Mouth",
+                ],
+                [
+                    "tt1",
+                    "TT-1",
+                    null,
+                    "Tetanus",
+                    "Early in pregnancy",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Upper arm",
+                ],
+                [
+                    "tt2",
+                    "TT-2",
+                    null,
+                    "Tetanus",
+                    "4 weeks after TT-1",
+                    "0.5 ml",
+                    "Intramuscular",
+                    "Upper arm",
+                ],
+            ];
+            const M = (id) =>
+                VX.find((v) => v[0] == id) || [
+                    "",
+                    "",
+                    "",
+                    "Not listed",
+                    "",
+                    "",
+                    "",
+                    "",
+                ];
+            const mkTT = () => {
+                const b = Math.max(td(), U.preg.start);
+                U.tt = [
+                    { id: "tt1", n: "TT-1", due: b, src: "calculated" },
+                    {
+                        id: "tt2",
+                        n: "TT-2",
+                        due: b + 28 * D,
+                        p: "tt1",
+                        g: 28,
+                        src: "calculated",
+                    },
+                ];
+            };
+            const lst = (r) =>
+                r[0] == "m" ? U.tt : U.kids[r.split(":")[1]].doses;
+            const nextAnc = () => {
+                const p = U.preg;
+                while (U.ai < ANC.length && p.start + ANC[U.ai] * 7 * D < td())
+                    U.ai++;
+                return U.ai < ANC.length
+                    ? { due: p.start + ANC[U.ai] * 7 * D, src: "calculated" }
+                    : null;
+            };
+            const stc = (d) =>
+                d.done
+                    ? [t("Done"), "ok"]
+                    : d.due < td()
+                      ? [t("Overdue"), "wn"]
+                      : d.due - td() <= 7 * D
+                        ? [t("Due soon"), ""]
+                        : [t("Upcoming"), ""];
+            const tipsFor = () => {
+                const r = [],
+                    t = td();
+                if (U.preg) {
+                    const w = Math.floor((t - U.preg.start) / (7 * D));
+                    r.push(
+                        w < 20
+                            ? t(
+                                  "Keep your clinic card in a safe place and bring it to every visit.",
+                              )
+                            : t("Write your questions down before each visit."),
+                    );
+                }
+                U.kids.forEach((k) => {
+                    if ((t - k.birth) / (30.4 * D) < 6)
+                        r.push(
+                            t(
+                                "Keep {0}’s vaccination card with your phone.",
+                                k.name,
+                            ),
+                        );
+                });
+                return r;
+            };
+            let still = 0;
+            const pc = () => {
+                const c = still ? "pg" : "pg in";
+                still = 0;
+                return c;
+            };
+            const pg = (h) => {
+                $("#app").innerHTML = `<div class="${pc()}">${h}</div>`;
+            };
+            const main = (h, hdr = "") => {
+                $("#app").innerHTML =
+                    `${hdr}<div class="${pc()}">${h}</div><nav>${[
+                        ["home", "Home", "home"],
+                        ["vax", "Vaccines", "shield"],
+                        ["tips", "Tips", "bulb"],
+                        ["me", "Profile", "user"],
+                    ]
+                        .map(
+                            ([k, l, i]) =>
+                                `<button type="button" class="${tab == k ? "on" : ""}" onclick="go('${k}')">${I(i)}${t(l)}</button>`,
+                        )
+                        .join("")}</nav>`;
+            };
+            function go(t) {
+                if (t) tab = t;
+                if (U && U.preg && !U.tt) mkTT();
+                ({
+                    welcome: fW,
+                    su: fSU,
+                    li: fLI,
+                    s1: f1,
+                    s2: f2,
+                    born: fBorn,
+                    home: fHome,
+                    vax: fVax,
+                    tips: fTips,
+                    me: fMe,
+                })[tab]();
+            }
+
+            function fW() {
+                pg(
+                    `<div style="min-height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:20px"><div><div class="w-top"><div class="wm">${I("logo")}<span>Kibondo</span></div>${langSw()}</div><div class="big1000" aria-hidden="true">1000</div><h1 class="w-h1">${t("Never miss a visit or a vaccine in your child’s first 1000 days.")}</h1><div class="tl" aria-hidden="true"><div class="tl-bar"><span style="flex:270"></span><span style="flex:365"></span><span style="flex:365"></span></div><div class="tl-lbl"><span style="flex:270">${t("Pregnancy")}</span><span style="flex:365">${t("Year 1")}</span><span style="flex:365">${t("Year 2")}</span></div></div><div class="rows"><div class="row">${I("cal")}<div>${t("Visit reminders")}</div></div><div class="row">${I("shield")}<div>${t("Vaccine schedule")}</div></div><div class="row">${I("bulb")}<div>${t("Trusted tips")}</div></div></div></div><div><button type="button" class="b" onclick="go('su')">${t("Create account")}</button><button type="button" class="lk" onclick="go('li')">${t("I already have an account")}</button></div></div>`,
+                );
+            }
+            function fSU() {
+                pg(
+                    `<button type="button" class="bk" onclick="go('welcome')" aria-label="${t("Back")}">${I("back")}</button><h2>${t("Create your account")}</h2><p class="m">${t("It takes less than a minute.")}</p><label class="m" for="nm">${t("Your first name")}</label><input id="nm" maxlength="20" autocomplete="given-name"><label class="m" for="ph">${t("Phone number")}</label><input id="ph" inputmode="tel" maxlength="10" placeholder="07XXXXXXXX"><label class="m" for="pn">${t("Choose a 4-digit PIN")}</label><input id="pn" type="password" inputmode="numeric" maxlength="4" placeholder="${t("PIN")}"><label class="m" for="pc">${t("Type the PIN again")}</label><input id="pc" type="password" inputmode="numeric" maxlength="4" placeholder="${t("PIN")}"><p id="er" class="er"></p><button type="button" class="b" onclick="dSU()">${t("Create account")}</button><button type="button" class="lk" onclick="go('li')">${t("I already have an account")}</button>`,
+                );
+            }
+            function dSU() {
+                const n = E($("#nm").value.trim()),
+                    p = $("#ph").value.trim(),
+                    a = $("#pn").value,
+                    e = $("#er");
+                if (!n) return (e.textContent = t("Type your first name."));
+                if (!/^07\d{8}$/.test(p))
+                    return (e.textContent = t(
+                        "Enter a 10-digit number starting with 07.",
+                    ));
+                if (!/^\d{4}$/.test(a))
+                    return (e.textContent = t("The PIN must be 4 digits."));
+                if ($("#pc").value != a)
+                    return (e.textContent = t("The two PINs do not match."));
+                if (S.acc[p])
+                    return (e.textContent = t(
+                        "This number already has an account. Log in instead.",
+                    ));
+                U = { ok: 0, kids: [], ai: 0, name: n };
+                S.acc[p] = { pin: a, d: U };
+                ph = p;
+                sv();
+                go("s1");
+            }
+            function fLI() {
+                pg(
+                    `<button type="button" class="bk" onclick="go('welcome')" aria-label="${t("Back")}">${I("back")}</button><h2>${t("Welcome back")}</h2><p class="m">${t("Log in with your phone number and PIN.")}</p><label class="m" for="ph">${t("Phone number")}</label><input id="ph" inputmode="tel" maxlength="10" placeholder="07XXXXXXXX"><label class="m" for="pn">${t("4-digit PIN")}</label><input id="pn" type="password" inputmode="numeric" maxlength="4" placeholder="${t("PIN")}"><p id="er" class="er"></p><button type="button" class="b" onclick="dLI()">${t("Log in")}</button><button type="button" class="lk" onclick="toast('${t("In the real app, a 6-digit code is sent by SMS.")}')">${t("Forgot PIN?")}</button><button type="button" class="lk" onclick="go('su')">${t("Create a new account")}</button>`,
+                );
+            }
+            function dLI() {
+                const p = $("#ph").value.trim(),
+                    n = $("#pn").value,
+                    e = $("#er"),
+                    a = S.acc[p];
+                if (!/^07\d{8}$/.test(p))
+                    return (e.textContent = t(
+                        "Enter a 10-digit number starting with 07.",
+                    ));
+                if (!a)
+                    return (e.textContent = t(
+                        "No account for this number. Create one first.",
+                    ));
+                if (a.pin != n)
+                    return (e.textContent = t("Wrong PIN. Try again."));
+                ph = p;
+                U = a.d;
+                go(U.ok ? "home" : "s1");
+            }
+
+            function f1() {
+                pg(
+                    `${stpBar(1)}<h2>${t("Are you pregnant?")}</h2><button type="button" class="b" onclick="T.m='w';f1y()">${t("Yes")}</button><button type="button" class="b o" onclick="go('s2')">${t("No")}</button>`,
+                );
+            }
+            function f1y() {
+                pg(
+                    `${stpBar(1)}<button type="button" class="bk" onclick="f1()" aria-label="${t("Back")}">${I("back")}</button><h2>${t("How far along are you?")}</h2><div class="seg eq" role="group"><button type="button" class="${T.m == "w" ? "on" : ""}" aria-pressed="${T.m == "w"}" onclick="T.m='w';still=1;f1y()">${t("I know the weeks")}</button><button type="button" class="${T.m == "d" ? "on" : ""}" aria-pressed="${T.m == "d"}" onclick="T.m='d';still=1;f1y()">${t("I know my due date")}</button></div>${T.m == "w" ? `<label class="m" for="wk">${t("Weeks pregnant (1 to 42)")}</label><input id="wk" inputmode="numeric" maxlength="2">` : `<label class="m">${t("Due date")}</label>` + DB("du")}<label class="m">${t("Next appointment from your card (optional)")}</label>${DB("na")}<p id="er" class="er"></p><button type="button" class="b" onclick="s1()">${t("Continue")}</button>`,
+                );
+            }
+            function s1() {
+                const e = $("#er");
+                let st;
+                if (T.m == "w") {
+                    const w = +$("#wk").value;
+                    if (!(w >= 1 && w <= 42))
+                        return (e.textContent = t(
+                            "Weeks must be from 1 to 42. Please check with your health center.",
+                        ));
+                    st = td() - w * 7 * D;
+                } else {
+                    const d = RD("du");
+                    if (!d) return (e.textContent = t("Type the due date."));
+                    if (isNaN(d) || d < td() - 14 * D || d > td() + 300 * D)
+                        return (e.textContent = t(
+                            "Please check this date with your health center.",
+                        ));
+                    st = d - 280 * D;
+                }
+                const n = RD("na");
+                if (isNaN(n) || (n && n < td()))
+                    return (e.textContent =
+                        dErr(n) + t(" You can also leave it empty."));
+                U.preg = { start: st };
+                U.ai = 0;
+                U.appt = n ? { due: n, src: "doctor" } : nextAnc();
+                sv();
+                go("s2");
+            }
+
+            function f2() {
+                pg(
+                    `${stpBar(2)}<h2>${t("Do you have a child under 2 years?")}</h2><button type="button" class="b" onclick="T.mode='s';fK()">${t("Yes")}</button><button type="button" class="b o" onclick="U.ok=1;sv();go('home')">${t("No")}</button>`,
+                );
+            }
+            function fK() {
+                pg(
+                    `${U && U.ok ? "" : stpBar(2)}<button type="button" class="bk" onclick="go('${U && U.ok ? "home" : "s2"}')" aria-label="${t("Back")}">${I("back")}</button><h2>${T.mode == "b" ? t("Your baby") : t("Your child")}</h2><label class="m" for="kn">${t("Name or nickname")}</label><input id="kn" maxlength="30"><label class="m">${t("Birth date")}</label>${DB("kb")}<p id="er" class="er"></p>${T.mode == "s" ? `<button type="button" class="b" onclick="sK(1)">${t("Save and add another")}</button><button type="button" class="b o" onclick="sK(0)">${t("Save and finish")}</button>` : `<button type="button" class="b" onclick="sK(0)">${t("Save")}</button>`}`,
+                );
+            }
+            function sK(more) {
+                const e = $("#er"),
+                    n = E($("#kn").value.trim()),
+                    b = RD("kb");
+                if (!n) return (e.textContent = t("Type the name."));
+                if (!b || isNaN(b))
+                    return (e.textContent = t("Type a valid birth date."));
+                if (b > td())
+                    return (e.textContent = t(
+                        "The birth date cannot be in the future.",
+                    ));
+                if (b < td() - 730 * D)
+                    return (e.textContent = t(
+                        "Kibondo follows children until 2 years.",
+                    ));
+                if (T.mode == "b" && U.preg && b < U.preg.start)
+                    return (e.textContent = t(
+                        "The birth date is before the pregnancy start.",
+                    ));
+                const k = {
+                    name: n,
+                    birth: b,
+                    doses: VX.filter((v) => v[2] != null).map((v) => ({
+                        id: v[0],
+                        n: v[1],
+                        due: b + v[2] * D,
+                        p: v[8],
+                        g: v[9],
+                        src: "calculated",
+                    })),
+                };
+                U.kids.push(k);
+                T.k = k;
+                T.more = more;
+                sv();
+                fPre();
+            }
+            function fPre() {
+                if (T.mode == "b") return nxt();
+                const l = T.k.doses
+                    .map((d, i) =>
+                        d.due <= td()
+                            ? `<label class="chk" for="c${i}"><input type="checkbox" id="c${i}"><span>${t(d.n)}<span class="sub" style="display:block">${t("Due {0}", fm(d.due))}</span></span></label>`
+                            : "",
+                    )
+                    .join("");
+                if (!l) return nxt();
+                pg(
+                    `${U && U.ok ? "" : stpBar(2)}<h2>${t("Already given?")}</h2><p class="m">${t("Tick the vaccines {0} already received, so they are not reminded again.", T.k.name)}</p><div class="grp">${l}</div><button type="button" class="b" onclick="sPre()">${t("Continue")}</button>`,
+                );
+            }
+            function sPre() {
+                T.k.doses.forEach((d, i) => {
+                    const c = $("#c" + i);
+                    if (c && c.checked) d.done = true;
+                });
+                sv();
+                nxt();
+            }
+            function nxt() {
+                if (T.more) return fK();
+                if (T.mode == "b") {
+                    U.preg = null;
+                    U.appt = null;
+                }
+                U.ok = 1;
+                sv();
+                go("home");
+            }
+
+            function fHome() {
+                tab = "home";
+                const t0 = td(),
+                    ks = U.kids;
+                let hdr = `<div class="hhdr"><div class="gr">Muraho${U.name ? ", " + U.name : ""}</div>`;
+                if (U.preg) {
+                    const w = Math.floor((t0 - U.preg.start) / (7 * D));
+                    hdr += `<div class="ht">${t("Week {0} of pregnancy", w)}</div><div class="hd">${t("Due {0}", fm(U.preg.start + 280 * D))}</div><div class="hbar" aria-hidden="true"><i style="width:${Math.min(100, Math.max(0, (w / 40) * 100))}%"></i></div>`;
+                } else if (ks.length) {
+                    const n0 = Math.floor((t0 - ks[0].birth) / D);
+                    hdr += `<div class="ht">${t("{0} is {1} old", ks[0].name, ageTxt(n0))}</div>`;
+                } else {
+                    hdr += `<div class="ht">${t("Nothing to track yet.")}</div>`;
+                }
+                hdr += `</div>`;
+                let h = "";
+                if (!U.preg && !ks.length) {
+                    h += `<button type="button" class="b" onclick="T.mode='s';fK()">${I("plus")}${t("Add a baby")}</button><button type="button" class="b o" onclick="T.m='w';f1y()">${t("I am pregnant")}</button>`;
+                } else {
+                    let rows = "";
+                    if (U.preg) {
+                        const a = U.appt;
+                        rows += a
+                            ? `<button type="button" class="grow" onclick="act('a')">${I("cal")}<div><b>${t("Antenatal visit")}</b><div class="sub">${fm(a.due)}, ${a.src == "doctor" ? t("from your card") : t("estimated by Kibondo")}</div></div>${a.due < t0 ? stHtml(t("Did you go?"), "wn") : ""}</button>`
+                            : `<div class="grow st">${I("cal")}<div><b>${t("Antenatal visit")}</b><div class="sub">${t("No more visits in the schedule.")}</div></div></div>`;
+                        if (U.tt) {
+                            const tj = U.tt.findIndex((x) => !x.done),
+                                tx = U.tt[tj];
+                            if (tx) {
+                                const [sl, sc] = stc(tx);
+                                rows += `<button type="button" class="grow" onclick="act('m:${tj}')">${I("shield")}<div><b>${t("{0} for you", t(tx.n))}</b><div class="sub">${t("Protects against tetanus, {0}", fm(tx.due))}</div></div>${stHtml(sl, sc)}</button>`;
+                            }
+                        }
+                    }
+                    ks.forEach((k, i) => {
+                        const n = Math.floor((t0 - k.birth) / D),
+                            ag = ageTxt(n),
+                            j = k.doses.findIndex((d) => !d.done),
+                            d = k.doses[j];
+                        rows += `<div class="grow st">${I("baby")}<div><b>${t("{0} is {1} old", k.name, ag)}</b></div></div>`;
+                        if (d) {
+                            const [sl, sc] = stc(d);
+                            rows += `<button type="button" class="grow" onclick="act('v:${i}:${j}')">${I("shield")}<div><b>${t(d.n)}</b><div class="sub">${k.name}, ${fm(d.due)}</div></div>${stHtml(sl, sc)}</button>`;
+                        } else {
+                            rows += `<div class="grow st">${I("check")}<div><b>${t("{0}: all vaccines done.", k.name)}</b></div>${stHtml(t("Done"), "ok")}</div>`;
+                        }
+                    });
+                    h += `<div class="grp">${rows}</div>`;
+                }
+                const tp = tipsFor()[0];
+                if (tp)
+                    h += `<div class="tipblk"><b>${t("Tip")}</b><div class="m" style="margin:0">${tp}</div></div>`;
+                if (U.preg)
+                    h += `<button type="button" class="b o" onclick="go('born')">${I("baby")}${t("My baby is born")}</button>`;
+                main(h, hdr);
+            }
+
+            function fBorn() {
+                pg(
+                    `<button type="button" class="bk" onclick="go('home')" aria-label="${t("Back")}">${I("back")}</button><h2>${t("Has your baby been born?")}</h2><button type="button" class="b" onclick="T.mode='b';fK()">${t("Yes")}</button><button type="button" class="b o" onclick="go('home')">${t("Not yet")}</button><button type="button" class="b o" onclick="noPreg()">${t("I am no longer pregnant")}</button>`,
+                );
+            }
+            function noPreg() {
+                U.preg = null;
+                U.appt = null;
+                sv();
+                go("home");
+                toast(
+                    t("We are here for you. Pregnancy reminders are stopped."),
+                );
+            }
+
+            function fVax() {
+                tab = "vax";
+                const L = (
+                    U.preg ? [{ name: t("Mother"), doses: U.tt, m: 1 }] : []
+                ).concat(
+                    U.kids.map((k, i) => ({ name: k.name, doses: k.doses, i })),
+                );
+                if (!L.length)
+                    return main(
+                        `<h2>${t("Vaccines")}</h2><div class="grp"><div class="grow st"><div>${t("Add a pregnancy or a baby from Home to see the vaccine list.")}</div></div></div>`,
+                    );
+                T.ki = Math.min(T.ki || 0, L.length - 1);
+                const s = L[T.ki];
+                main(
+                    `<h2>${t("Vaccines")}</h2>${L.length > 1 ? `<div class="seg eq" role="group">${L.map((x, i) => `<button type="button" class="${i == T.ki ? "on" : ""}" aria-pressed="${i == T.ki}" onclick="T.ki=${i};still=1;fVax()">${x.name}</button>`).join("")}</div>` : ""}<div class="grp">${s.doses
+                        .map((d, j) => {
+                            const [a, c] = stc(d),
+                                m = M(d.id),
+                                r = s.m ? "m:" + j : "v:" + s.i + ":" + j,
+                                body = `<div><b>${t(d.n)}</b><div class="sub">${t("Protects against {0}", t(m[3]))}</div><div class="sub">${d.done ? (d.given ? t("Given {0}", fm(d.given)) : t("Already given")) : t("Due {0}", fm(d.due)) + (d.src == "doctor" ? t(", from your card") : t(", estimated"))}</div></div>${stHtml(a, c)}`;
+                            return d.done
+                                ? `<div class="grow st">${body}</div>`
+                                : `<button type="button" class="grow" onclick="act('${r}')">${body}</button>`;
+                        })
+                        .join(
+                            "",
+                        )}</div><p class="m">${t("Sample content from a schedule chart. The real Rwanda schedule must come from doctors.")}</p>`,
+                );
+            }
+
+            function fTips() {
+                tab = "tips";
+                const l = tipsFor();
+                main(
+                    `<h2>${t("Tips")}</h2><div class="rows">${l.length ? l.map((x) => `<div class="row">${I("bulb")}<div>${x}</div></div>`).join("") : `<div class="row"><div>${t("No approved tip for this stage yet.")}</div></div>`}</div><p class="m" style="margin-top:12px">${t("Sample text for the prototype. Real tips are written or approved by doctors, in Kinyarwanda.")}</p>`,
+                );
+            }
+
+            function fMe() {
+                tab = "me";
+                main(
+                    `<div class="w-top" style="margin-bottom:14px"><h2 style="margin:0">${t("Profile")}</h2>${langSw()}</div><div class="rows" style="margin-bottom:16px"><div class="row">${I("phone")}<div><b style="font-weight:500">${ph}</b><div class="sub">${t("Protected by your PIN")}</div></div></div></div><button type="button" class="b o" onclick="U=null;ph=null;go('welcome')">${t("Log out")}</button><button type="button" class="b o" onclick="rq()">${t("Reset prototype data")}</button><p class="m" style="margin-top:12px">${t("Prototype only. There is no server: data stays on this device, and no SMS is sent.")}</p>`,
+                );
+            }
+            function rq() {
+                sheet(
+                    `<h3>${t("Remove all prototype data?")}</h3><button type="button" class="b" onclick="rs()">${t("Yes, remove")}</button><button type="button" class="b o" onclick="cs()">${t("Cancel")}</button>`,
+                );
+            }
+            function rs() {
+                S = { acc: {}, lang: lang };
+                sv();
+                U = null;
+                ph = null;
+                cs();
+                go("welcome");
+            }
+
+            const tt = (r) => (r == "a" ? t("Antenatal visit") : t(tg(r).n));
+            const tg = (r) => {
+                if (r == "a") return U.appt;
+                const p = r.split(":");
+                return r[0] == "m" ? U.tt[p[1]] : U.kids[p[1]].doses[p[2]];
+            };
+            const mi = (r) => {
+                const m = M(tg(r).id);
+                return `<div class="mi"><div class="mi-r"><b>${t("Protects against:")}</b><span>${t(m[3])}</span></div><div class="mi-r"><b>${t("When:")}</b><span>${t(m[4])}</span></div><div class="mi-r"><b>${t("Dose:")}</b><span>${t(m[5])}</span></div><div class="mi-r"><b>${t("Route:")}</b><span>${t(m[6])}</span></div><div class="mi-r"><b>${t("Site:")}</b><span>${t(m[7])}</span></div></div>`;
+            };
+            function act(r) {
+                sheet(
+                    `<h3>${tt(r)}</h3>${r == "a" ? `<p class="m">${U.appt.src == "doctor" ? t("This date came from your clinic card.") : t("Kibondo estimated this date from your pregnancy weeks. Ask your clinic to confirm it.")}</p>` : mi(r)}<button type="button" class="b" onclick="wt('${r}')">${I("check")}${t("I went")}</button><button type="button" class="b o" onclick="ms('${r}')">${I("x")}${t("I missed it")}</button><button type="button" class="b o" onclick="ch('${r}')">${I("edit")}${t("Change date")}</button>`,
+                );
+            }
+            function wt(r) {
+                const a = r == "a";
+                sheet(
+                    `<h3>${a ? t("Next date on your card?") : t("Date the dose was given")}</h3>${DB("x")}${a ? "" : `<p class="m">${t("Next date from the card (optional)")}</p>` + DB("n")}<p id="er" class="er"></p><button type="button" class="b" onclick="wd('${r}')">${t("Save")}</button>${a ? `<button type="button" class="b o" onclick="wd('${r}',1)">${t("No next date")}</button>` : ""}`,
+                );
+            }
+            function wd(r, s) {
+                const e = $("#er"),
+                    a = r == "a",
+                    x = RD("x"),
+                    t0 = td();
+                if (a) {
+                    if (!s && (!x || isNaN(x) || x < t0))
+                        return (e.textContent = dErr(x));
+                    U.ai++;
+                    U.appt = s ? nextAnc() : { due: x, src: "doctor" };
+                } else {
+                    const d = tg(r),
+                        n = RD("n");
+                    if (!x || isNaN(x) || x > t0)
+                        return (e.textContent = !x
+                            ? t("Type the date the dose was given.")
+                            : isNaN(x)
+                              ? dErr(x)
+                              : t("The date given cannot be in the future."));
+                    if (isNaN(n) || (n && n < t0))
+                        return (e.textContent = dErr(n));
+                    d.done = true;
+                    d.given = x;
+                    lst(r).forEach((o) => {
+                        if (o.p == d.id && !o.done) {
+                            if (n) {
+                                o.due = n;
+                                o.src = "doctor";
+                            } else if (o.src != "doctor")
+                                o.due = Math.max(o.due, x + o.g * D);
+                        }
+                    });
+                }
+                sv();
+                cs();
+                still = 1;
+                go();
+                toast(t("Saved"));
+            }
+            function ms(r) {
+                sheet(
+                    `<h3>${t("When is your new appointment?")}</h3>${DB("x")}<p id="er" class="er"></p><button type="button" class="b" onclick="sd('${r}')">${t("Save")}</button><button type="button" class="b o" onclick="cs();toast('${t("Please go to your health center and ask for a new date.")}')">${t("I don’t know yet")}</button>`,
+                );
+            }
+            function ch(r) {
+                sheet(
+                    `<h3>${t("New date from the doctor")}</h3>${DB("x")}<p id="er" class="er"></p><button type="button" class="b" onclick="sd('${r}')">${t("Save")}</button>`,
+                );
+            }
+            function sd(r) {
+                const x = RD("x");
+                if (!x || isNaN(x) || x < td())
+                    return ($("#er").textContent = dErr(x));
+                const u = tg(r);
+                u.due = x;
+                u.src = "doctor";
+                sv();
+                cs();
+                still = 1;
+                go();
+                toast(t("New date saved"));
+            }
+            const clk = () => {
+                const d = new Date();
+                $("#clk").textContent =
+                    d.getHours() +
+                    ":" +
+                    String(d.getMinutes()).padStart(2, "0");
+            };
+            clk();
+            setInterval(clk, 30000);
+            go("welcome");
+        </script>
+    </body>
+</html>
